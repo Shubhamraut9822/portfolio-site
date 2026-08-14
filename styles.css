@@ -4,6 +4,12 @@
    ========================================================= */
 
 :root {
+  /* Role-based tokens: flip between light/dark below.
+     --charcoal   = primary text / "ink" accent elements
+     --off-white  = page background
+     --white      = elevated surface (cards)
+     --slate      = secondary text
+     --border     = hairlines, card borders */
   --charcoal: #1C1C1E;
   --off-white: #F7F5F1;
   --coral: #FF5436;
@@ -11,10 +17,43 @@
   --border: #E4E1DB;
   --white: #FFFFFF;
 
+  /* Fixed tokens: same in both themes, used where a role token would
+     invert incorrectly (e.g. white text sitting on a coral button, or
+     the always-dark footer/CTA panels). */
+  --ink: #1C1C1E;
+  --ink-text: #F7F5F1;
+  --ink-text-secondary: rgba(247, 245, 241, 0.72);
+  --ink-text-tertiary: rgba(247, 245, 241, 0.5);
+  --coral-text: #FFFFFF;
+  --slate-solid: #5C5C5C;
+
+  --header-bg: rgba(247, 245, 241, 0.92);
   --header-height: 76px;
   --radius: 10px;
   --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
   --transition: 0.2s ease;
+}
+
+/* Dark theme overrides. data-theme is set on <html> by an inline
+   head script (before first paint) based on saved preference or the
+   OS setting, then flipped by the toggle button in main.js. */
+:root[data-theme="dark"] {
+  --charcoal: #ECEAE4;
+  --off-white: #131315;
+  --white: #1E1E21;
+  --slate: #A6A39C;
+  --border: #313134;
+
+  --ink: #0B0B0C;
+  --header-bg: rgba(19, 19, 21, 0.85);
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+body, .site-header, .card, .profile-card, .status-tile, .doc-group,
+.doc-row, .credential-tile, .lead-capture, .coming-soon, .timeline-step,
+.tile, .pill-outline, .filter-btn, .lead-form input, .site-nav,
+.theme-toggle, .btn {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 * {
@@ -88,11 +127,11 @@ p {
 .bg-offwhite { background-color: var(--off-white); }
 .bg-white { background-color: var(--white); }
 .bg-charcoal {
-  background-color: var(--charcoal);
-  color: var(--off-white);
+  background-color: var(--ink);
+  color: var(--ink-text);
 }
-.bg-charcoal h1, .bg-charcoal h2, .bg-charcoal h3 { color: var(--white); }
-.bg-charcoal p { color: rgba(247, 245, 241, 0.72); }
+.bg-charcoal h1, .bg-charcoal h2, .bg-charcoal h3 { color: var(--ink-text); }
+.bg-charcoal p { color: var(--ink-text-secondary); }
 
 .text-center { text-align: center; }
 
@@ -152,7 +191,7 @@ p {
 
 .btn-primary {
   background-color: var(--coral);
-  color: var(--white);
+  color: var(--coral-text);
 }
 
 .btn-primary:hover {
@@ -193,7 +232,7 @@ p {
 
 .btn-outline-coral:hover {
   background-color: var(--coral);
-  color: var(--white);
+  color: var(--coral-text);
 }
 
 .btn-group {
@@ -208,7 +247,7 @@ p {
   position: sticky;
   top: 0;
   z-index: 200;
-  background-color: rgba(247, 245, 241, 0.92);
+  background-color: var(--header-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -230,6 +269,41 @@ p {
   letter-spacing: -0.01em;
   color: var(--charcoal);
 }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--charcoal);
+}
+
+.theme-toggle:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-toggle .icon-moon { display: block; }
+.theme-toggle .icon-sun { display: none; }
+
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
 
 .site-nav {
   display: flex;
@@ -254,7 +328,7 @@ p {
 
 .nav-cta {
   background-color: var(--coral);
-  color: var(--white) !important;
+  color: var(--coral-text) !important;
   font-weight: 600;
   padding: 10px 20px;
   border-radius: var(--radius);
@@ -330,8 +404,8 @@ p {
 /* ---------- Footer ---------- */
 
 .site-footer {
-  background-color: var(--charcoal);
-  color: var(--off-white);
+  background-color: var(--ink);
+  color: var(--ink-text);
   border-top: 1px solid var(--border);
   padding: 56px 0 24px;
 }
@@ -346,7 +420,7 @@ p {
 .footer-brand {
   font-weight: 700;
   font-size: 1.05rem;
-  color: var(--white);
+  color: var(--ink-text);
 }
 
 .footer-nav {
@@ -356,7 +430,7 @@ p {
 }
 
 .footer-nav a, .footer-contact a {
-  color: rgba(247, 245, 241, 0.75);
+  color: var(--ink-text-secondary);
   font-size: 0.92rem;
   transition: color var(--transition);
 }
@@ -375,7 +449,7 @@ p {
 .footer-copy {
   text-align: center;
   font-size: 0.82rem;
-  color: rgba(247, 245, 241, 0.5);
+  color: var(--ink-text-tertiary);
   border-top: 1px solid rgba(247, 245, 241, 0.12);
   padding-top: 24px;
 }
@@ -417,6 +491,7 @@ p {
   width: 44px;
   height: 44px;
   margin-bottom: 20px;
+  color: var(--charcoal);
 }
 
 /* ---------- Card grid (three-up) ---------- */
@@ -483,12 +558,12 @@ p {
 
 .pill-coral {
   background-color: var(--coral);
-  color: var(--white);
+  color: var(--coral-text);
 }
 
 .pill-slate {
-  background-color: var(--slate);
-  color: var(--white);
+  background-color: var(--slate-solid);
+  color: var(--coral-text);
 }
 
 .pill-outline {
@@ -716,7 +791,7 @@ p {
 .filter-btn.active {
   background-color: var(--coral);
   border-color: var(--coral);
-  color: var(--white);
+  color: var(--coral-text);
 }
 
 .template-grid {
@@ -981,7 +1056,7 @@ p {
 
 .contact-items a:not(.btn) {
   font-weight: 600;
-  color: var(--white);
+  color: var(--ink-text);
   border-bottom: 1px solid rgba(247, 245, 241, 0.4);
   padding-bottom: 2px;
   transition: color var(--transition), border-color var(--transition);

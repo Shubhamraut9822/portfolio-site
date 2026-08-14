@@ -1,6 +1,26 @@
 // Shubham Raut — shared site behaviour
 
 document.addEventListener('DOMContentLoaded', () => {
+  /* Theme toggle (light/dark) */
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    const label = (theme) => (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    const applyLabel = (theme) => {
+      themeToggle.setAttribute('aria-label', label(theme));
+      themeToggle.setAttribute('title', label(theme));
+    };
+
+    applyLabel(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      applyLabel(next);
+    });
+  }
+
   /* Mobile nav toggle */
   const navToggle = document.getElementById('navToggle');
   const siteNav = document.getElementById('siteNav');
