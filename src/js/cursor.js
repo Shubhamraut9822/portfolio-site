@@ -2,7 +2,7 @@
  * Custom cursor.
  *
  * A 12px coral ring that trails the pointer with a little easing and swells to
- * 40px over anything clickable. Desktop / fine-pointer only — touch devices
+ * 40px over anything clickable. Desktop / fine-pointer only: touch devices
  * keep their native behaviour and never see this.
  *
  * Also broadcasts the normalised pointer position, which the 3D scene uses for

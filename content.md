@@ -13,8 +13,8 @@ Helping companies build security and AI compliance programs that actually work.
 
 ## Primary Button
 Text: "Book a Consultation"
-Links to: [your Calendly link or email — whatever you want]
+Links to: [your Calendly link or email, whatever you want]
 
 ## Secondary Button
 Text: "View Services"
-Links to: [can be a placeholder for now — #services]
+Links to: [can be a placeholder for now, #services]

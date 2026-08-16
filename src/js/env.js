@@ -25,7 +25,7 @@ export const canRender3D = () => window.innerWidth >= WEBGL_BREAKPOINT;
 /** True when the user has asked the OS to tone motion down. */
 export const prefersReducedMotion = () => reducedMotionQuery.matches;
 
-/** Pointer-based devices only — no custom cursor on touch. */
+/** Pointer-based devices only: no custom cursor on touch. */
 export const hasFinePointer = () =>
   window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 

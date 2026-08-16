@@ -85,7 +85,7 @@ export function initLoader(ready) {
 
   return Promise.all([animation, readySettled])
     .then(() => {
-      // If Three.js was the slow one, the pulse dot is running — stop it first.
+      // If Three.js was the slow one, the pulse dot is running, so stop it first.
       if (dot) gsap.killTweensOf(dot);
       return gsap.to(loader, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }).then();
     })

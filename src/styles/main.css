@@ -1,5 +1,5 @@
 /* ==========================================================================
-   shubhamraut.com — The Compliance Architecture
+   shubhamraut.com | The Compliance Architecture
    Design system + layout for all six pages.
    ========================================================================== */
 
@@ -62,7 +62,7 @@
 }
 
 html {
-  /* Lenis owns smooth scrolling — never CSS. */
+  /* Lenis owns smooth scrolling, never CSS. */
   scroll-behavior: auto;
   -webkit-text-size-adjust: 100%;
 }
@@ -498,7 +498,7 @@ body.is-leaving .page-veil {
 /*
  * The stage spans the whole document (not the viewport) so its children can be
  * positioned in page coordinates. Each child then gets its own scrubbed offset
- * as it crosses the viewport — parallax that is always framed correctly,
+ * as it crosses the viewport: parallax that is always framed correctly,
  * however far down the page it sits.
  */
 .depth-stage {
@@ -728,7 +728,7 @@ body.is-leaving .page-veil {
 }
 
 /* --------------------------------------------------------------------------
-   10. Homepage — hero
+   10. Homepage: hero
    -------------------------------------------------------------------------- */
 
 .hero {
@@ -826,7 +826,7 @@ body.is-leaving .page-veil {
 }
 
 /* --------------------------------------------------------------------------
-   11. Homepage — services, ticker, teasers
+   11. Homepage: services, ticker, teasers
    -------------------------------------------------------------------------- */
 
 .card-stack {
@@ -1170,7 +1170,7 @@ body.is-leaving .page-veil {
 }
 
 /* --------------------------------------------------------------------------
-   13. Inner pages — shared blocks
+   13. Inner pages: shared blocks
    -------------------------------------------------------------------------- */
 
 .page-header {
@@ -1713,7 +1713,7 @@ html.no-js [data-hero] {
 /*
  * Below this width the structure and the copy column fight for the same space,
  * so the 3D scene stands down and the CSS hero mark takes over. Mirrors
- * WEBGL_BREAKPOINT in env.js — change both together.
+ * WEBGL_BREAKPOINT in env.js. Change both together.
  */
 @media (max-width: 1099px) {
   .webgl { display: none; }

@@ -3,7 +3,7 @@
 ## Colors
 - Background (dark): #1A1A1F (almost black)
 - Background (light sections): #F5F5F0 (warm white)
-- Accent color: #FF4438 (electric coral — used for buttons and highlights)
+- Accent color: #FF4438 (electric coral, used for buttons and highlights)
 - Text on dark: #F5F5F0
 - Text on light: #1A1A1F
 - Secondary text: same as above but at 60% opacity

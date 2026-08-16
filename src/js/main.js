@@ -1,11 +1,11 @@
 /**
- * Entry point — shared by all six pages.
+ * Entry point, shared by all six pages.
  *
  * Boot order matters:
  *   1. Kick off the loading screen immediately, gated on a `ready` promise.
- *   2. Shared chrome (header, menu, page transitions) — cheap, do it first.
+ *   2. Shared chrome (header, menu, page transitions): cheap, do it first.
  *   3. Smooth scroll, so every later measurement agrees on scroll position.
- *   4. The 3D scene — homepage + desktop only, and lazily imported so the other
+ *   4. The 3D scene: homepage + desktop only, and lazily imported so the other
  *      five pages never download Three.js at all.
  *   5. Scroll-driven animation, once the DOM and the scene both exist.
  *   6. Release the loader, then play the hero entrance.
@@ -36,7 +36,7 @@ import {
 } from './ui.js';
 
 /* -------------------------------------------------------------------------- */
-/* Loader gate — opened once boot() has finished                              */
+/* Loader gate: opened once boot() has finished                               */
 /* -------------------------------------------------------------------------- */
 
 let releaseReady;
@@ -105,7 +105,7 @@ async function boot() {
     ScrollTrigger.refresh();
   });
 
-  // Layout settles once webfonts land — refresh so triggers sit on real numbers.
+  // Layout settles once webfonts land, so refresh to put triggers on real numbers.
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
   return three;

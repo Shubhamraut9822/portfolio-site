@@ -1,4 +1,4 @@
-# shubhamraut.com — The Compliance Architecture
+# shubhamraut.com | The Compliance Architecture
 
 A scroll-driven 3D portfolio for an AI governance / ISO implementation consultancy.
 Vanilla JavaScript, Vite, Three.js, GSAP ScrollTrigger and Lenis. No framework.
@@ -13,12 +13,12 @@ npm run preview  # serve the production build
 ```
 
 `npm run gen:noise` regenerates `src/assets/textures/noise.png` (the film-grain
-overlay). It's deterministic — only needed if you want to change the grain.
+overlay). It's deterministic, so it's only needed if you want to change the grain.
 
 ## Structure
 
 ```
-index.html              homepage — the full 3D experience
+index.html              homepage, the full 3D experience
 reference-build.html    Sentinel AI reference implementation
 templates.html          filterable template library
 playbooks.html          methodologies + 90-day roadmap timeline
@@ -42,7 +42,7 @@ scripts/generate-noise.mjs   procedural PNG grain generator
 **Boot order** (`main.js`): the loading screen starts immediately and is gated on
 a `ready` promise, so it can never dismiss before the scene behind it exists.
 Shared chrome and smooth scrolling come up first, then the 3D scene is
-**dynamically imported** — Three.js is a separate ~137 KB gzip chunk that only
+**dynamically imported**. Three.js is a separate ~137 KB gzip chunk that only
 the homepage on a wide viewport ever downloads. The other five pages load 52 KB
 gzip total.
 
@@ -60,14 +60,14 @@ the wrong place.
 **The wiring effect** packs every control-to-control connection into one
 `LineSegments` buffer, subdivided into short runs. `setDrawRange` walks that
 buffer sequentially, so animating the range makes the lines draw themselves one
-connection at a time — a circuit wiring up, from a single draw call.
+connection at a time, like a circuit wiring up, from a single draw call.
 
 ## Breakpoints
 
 | Width | Behaviour |
 |---|---|
 | ≥ 1100px | Full 3D scene, parallax, custom cursor |
-| 768–1099px | No 3D (structure and copy column would collide) — CSS hero mark instead; parallax and cursor still on |
+| 768–1099px | No 3D (structure and copy column would collide). CSS hero mark instead; parallax and cursor still on |
 | < 768px | Mobile layout: no 3D, no cursor, no parallax; entrance animations still play |
 
 `WEBGL_BREAKPOINT` in `env.js` and the `.webgl` / `.hero__mark` rules in

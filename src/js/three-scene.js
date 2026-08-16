@@ -1,5 +1,5 @@
 /**
- * "The Compliance Architecture" — the persistent 3D scene behind the homepage.
+ * "The Compliance Architecture": the persistent 3D scene behind the homepage.
  *
  * A layered geometric structure that assembles itself as the visitor scrolls:
  * foundation → pillars → risk platform → control blocks → connecting lines →
@@ -27,7 +27,7 @@ const DESKTOP_OFFSET_X = 2.8;
 /* Procedural textures                                                        */
 /* -------------------------------------------------------------------------- */
 
-/** Soft round sprite for the drifting particles — generated, never fetched. */
+/** Soft round sprite for the drifting particles, generated and never fetched. */
 function createParticleTexture() {
   const size = 64;
   const canvas = document.createElement('canvas');
@@ -94,7 +94,7 @@ function addEdges(mesh, color = COLORS.offWhite, opacity = 0.14) {
   return edges;
 }
 
-/** Layer 1 — the governance foundation. */
+/** Layer 1: the governance foundation. */
 function buildFoundation() {
   const group = new THREE.Group();
   const plate = new THREE.Mesh(new THREE.BoxGeometry(4, 0.15, 2.5), makePlateMaterial());
@@ -109,7 +109,7 @@ function buildFoundation() {
   return group;
 }
 
-/** Layer 2 — four core pillars at the corners of the base. */
+/** Layer 2: four core pillars at the corners of the base. */
 function buildPillars(material) {
   const group = new THREE.Group();
   const geometry = new THREE.BoxGeometry(0.15, 1.8, 0.15);
@@ -133,7 +133,7 @@ function buildPillars(material) {
   return group;
 }
 
-/** Layer 3 — the risk assessment platform, floating between the pillars. */
+/** Layer 3: the risk assessment platform, floating between the pillars. */
 function buildRiskLayer() {
   const group = new THREE.Group();
   const plate = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.1, 2), makePlateMaterial());
@@ -148,7 +148,7 @@ function buildRiskLayer() {
 }
 
 /**
- * Layer 4 — eight control blocks in a 4×2 grid on the risk platform.
+ * Layer 4: eight control blocks in a 4×2 grid on the risk platform.
  * Returns the group plus the grid positions so the connecting lines can be
  * generated from the exact same coordinates.
  */
@@ -182,7 +182,7 @@ function buildControlBlocks(material) {
 }
 
 /**
- * Layer 5 — the control relationship wiring.
+ * Layer 5: the control relationship wiring.
  *
  * Every connection is subdivided into short sub-segments packed into a single
  * LineSegments buffer. Because `setDrawRange` walks that buffer sequentially,
@@ -231,7 +231,7 @@ function buildConnections(blockPositions, blockBaseY) {
   return lines;
 }
 
-/** Layer 6 — the crown: certification / audit readiness. */
+/** Layer 6: the crown, for certification and audit readiness. */
 function buildCrown() {
   const group = new THREE.Group();
 
@@ -348,7 +348,7 @@ export function initThreeScene() {
    * A pre-filtered room environment is what separates "dark grey boxes" from a
    * luxury product render: it gives MeshPhysicalMaterial real specular
    * highlights along every edge instead of flat shading. Generated once from
-   * Three's built-in room, then thrown away — no HDR file is ever fetched.
+   * Three's built-in room, then thrown away, so no HDR file is ever fetched.
    */
   const pmrem = new THREE.PMREMGenerator(renderer);
   const roomTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);

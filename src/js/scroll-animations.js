@@ -60,7 +60,7 @@ const scrollY = () => (lenis ? lenis.scroll : window.scrollY || window.pageYOffs
  * starts `distance` above its resting place and ends `distance` below it.
  *
  * Doing it per element rather than as one global speed multiplier is what keeps
- * a 0.3x layer correctly framed at the bottom of a long page — a global factor
+ * a 0.3x layer correctly framed at the bottom of a long page. A global factor
  * would drift it further off-screen the deeper it sits.
  */
 export function initDepthLayers() {
@@ -80,7 +80,7 @@ export function initDepthLayers() {
 
   placeAnchored();
 
-  // Anchors depend on final layout — re-run once fonts and images have settled.
+  // Anchors depend on final layout, so re-run once fonts and images have settled.
   window.addEventListener('load', placeAnchored, { once: true });
   onResize(() => {
     placeAnchored();
@@ -135,7 +135,7 @@ export function initDepthLayers() {
  *
  * Driving this off one document-wide timeline was the obvious first move, but
  * it makes each phase's timing depend on how tall every *other* section happens
- * to be — edit some copy and the crown lands in the wrong place. Anchoring each
+ * to be: edit some copy and the crown lands in the wrong place. Anchoring each
  * phase to its own section keeps the choreography locked to the story.
  *
  * @param {object} three The handle returned by initThreeScene().
@@ -171,7 +171,7 @@ export function initSceneAssembly(three) {
     pillar.scale.y = 0.001;
     pillar.position.y = -0.9; // grows upward from the plate
   });
-  // Far enough left to clear the frustum entirely — at -6 it was still visible
+  // Far enough left to clear the frustum entirely. At -6 it was still visible
   // behind the hero headline before its cue.
   riskLayer.position.set(-16, riskLayer.userData.baseY, 0);
   riskLayer.scale.setScalar(0.9);
@@ -219,7 +219,7 @@ export function initSceneAssembly(three) {
     },
   });
 
-  // Hero — the four core pillars rise out of the foundation, staggered.
+  // Hero: the four core pillars rise out of the foundation, staggered.
   phase('#hero', 'top top', 'bottom top')
     .to(
       pillars.children.map((p) => p.scale),
@@ -232,12 +232,12 @@ export function initSceneAssembly(three) {
       0
     );
 
-  // What I do — the risk platform slides in from the left and locks into place.
+  // What I do: the risk platform slides in from the left and locks into place.
   phase('#services', 'top 85%', 'bottom 45%')
     .to(riskLayer.position, { x: 0, duration: 1, ease: 'power3.out' }, 0)
     .to(riskLayer.scale, { x: 1, y: 1, z: 1, duration: 0.8, ease: 'power2.out' }, 0.2);
 
-  // Frameworks — control blocks drop in one at a time and land with a bounce.
+  // Frameworks: control blocks drop in one at a time and land with a bounce.
   const blocks = phase('#frameworks', 'top 85%', 'bottom 40%');
   controls.children.forEach((block, index) => {
     const at = index * 0.09;
@@ -246,7 +246,7 @@ export function initSceneAssembly(three) {
       .to(block.scale, { x: 1, y: 1, z: 1, duration: 0.35, ease: 'power2.out' }, at);
   });
 
-  // Reference Build — the wiring draws itself between the controls.
+  // Reference Build: the wiring draws itself between the controls.
   const draw = { count: 0 };
   phase('#reference-teaser', 'top 90%', 'bottom 40%').to(draw, {
     count: connections.userData.vertexCount,
@@ -255,12 +255,12 @@ export function initSceneAssembly(three) {
     onUpdate: () => connections.geometry.setDrawRange(0, Math.floor(draw.count)),
   });
 
-  // Wizard — the crown descends into position.
+  // Wizard: the crown descends into position.
   phase('#wizard-teaser', 'top 90%', 'bottom 55%')
     .to(crown.position, { y: crown.userData.baseY, duration: 1, ease: 'power3.out' }, 0)
     .to(crown.scale, { x: 1, y: 1, z: 1, duration: 1, ease: 'back.out(1.6)' }, 0);
 
-  // Closing CTA — hand off to the render loop's settled coral pulse. This runs
+  // Closing CTA: hand off to the render loop's settled coral pulse. This runs
   // while the CTA is still rising into frame, so the finished structure is
   // visible above it rather than hidden behind the opaque panel.
   const settle = { v: 0 };
