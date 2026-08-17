@@ -1,126 +1,136 @@
-/**
- * Entry point, shared by all six pages.
- *
- * Boot order matters:
- *   1. Kick off the loading screen immediately, gated on a `ready` promise.
- *   2. Shared chrome (header, menu, page transitions): cheap, do it first.
- *   3. Smooth scroll, so every later measurement agrees on scroll position.
- *   4. The 3D scene: homepage + desktop only, and lazily imported so the other
- *      five pages never download Three.js at all.
- *   5. Scroll-driven animation, once the DOM and the scene both exist.
- *   6. Release the loader, then play the hero entrance.
- */
 import '../styles/main.css';
 
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { initLoader, showLoaderPulse } from './loader.js';
+import gsap from 'gsap';
+import { createLoader } from './loader.js';
+import { initUI } from './ui.js';
 import { initCursor } from './cursor.js';
-import { canRender3D, onResize, prefersReducedMotion, supportsWebGL } from './env.js';
-import {
-  initSmoothScroll,
-  initDepthLayers,
-  initSceneAssembly,
-  initReveals,
-  initCounters,
-  initScrollCue,
-  initTicker,
-  playHeroEntrance,
-} from './scroll-animations.js';
-import {
-  initHeader,
-  initMobileMenu,
-  initPageTransitions,
-  initAccordion,
-  initFilters,
-  initInertForms,
-} from './ui.js';
+import { initGlyphs } from './glyphs.js';
+import { initScroll } from './scroll.js';
 
-/* -------------------------------------------------------------------------- */
-/* Loader gate: opened once boot() has finished                               */
-/* -------------------------------------------------------------------------- */
+const MOBILE_BREAKPOINT = 768;
 
-let releaseReady;
-const ready = new Promise((resolve) => {
-  releaseReady = resolve;
-});
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = () => window.innerWidth < MOBILE_BREAKPOINT;
 
-// Starts the ~3s name animation right away; it will not dismiss until `ready`.
-const loaderFinished = initLoader(ready);
+if (reducedMotion) document.documentElement.classList.add('is-static');
 
-// If boot outlives the loader choreography, show the "still working" pulse.
-const pulseTimer = setTimeout(showLoaderPulse, 3000);
-ready.then(() => clearTimeout(pulseTimer));
-
-/* -------------------------------------------------------------------------- */
-/* Boot                                                                       */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Loads and starts the 3D scene, but only where it belongs: the homepage
- * (the only page with a `.webgl` canvas), on a viewport wide enough to warrant
- * it, on a device that can actually do WebGL.
- * @returns {Promise<object|null>}
- */
-async function loadScene() {
-  const canvas = document.querySelector('.webgl');
-  if (!canvas || !canRender3D() || !supportsWebGL()) return null;
-
+function supportsWebGL() {
   try {
-    const { initThreeScene } = await import('./three-scene.js');
-    return initThreeScene();
-  } catch (error) {
-    // A missing GPU context must never take the rest of the page down with it.
-    console.warn('3D scene unavailable, continuing without it.', error);
-    return null;
+    const c = document.createElement('canvas');
+    return Boolean(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+  } catch {
+    return false;
   }
 }
 
 async function boot() {
-  if (prefersReducedMotion()) document.documentElement.classList.add('no-motion');
+  const mobile = isMobile();
 
-  initHeader();
-  initMobileMenu();
-  initPageTransitions();
-  initAccordion();
-  initFilters();
-  initInertForms();
+  // The loader is the first thing that should be visible, so lift the page
+  // curtain before anything waits on fonts.
+  document.body.classList.add('is-ready');
 
-  initSmoothScroll();
+  const loader = createLoader({ reducedMotion, isMobile: mobile });
 
-  const three = await loadScene();
-  three?.setPointer(0, 0);
+  loader.set(0.12);
 
-  // The pointer feed runs on every page; only the homepage has a scene to steer.
-  initCursor((x, y) => three?.setPointer(x, y));
+  // Fonts matter here: the ring labels are rasterised to a canvas texture, so
+  // the scene must not build before JetBrains Mono is available.
+  if (document.fonts && document.fonts.ready) {
+    try {
+      await document.fonts.ready;
+    } catch {
+      /* fall through, the fallback monospace is acceptable */
+    }
+  }
+  loader.set(0.45);
 
-  initDepthLayers();
-  initSceneAssembly(three);
-  initReveals();
-  initCounters();
-  initScrollCue();
-  initTicker();
+  initUI({ reducedMotion });
 
-  onResize(() => {
-    three?.resize();
-    ScrollTrigger.refresh();
+  let scene = null;
+  const canvas = document.querySelector('[data-scene]');
+
+  if (canvas) {
+    if (!mobile && supportsWebGL()) {
+      const { createScene } = await import('./scene.js');
+      scene = createScene({ canvas });
+    } else {
+      canvas.remove();
+    }
+  }
+
+  loader.set(0.8);
+
+  const cursor = initCursor({
+    reducedMotion,
+    onMove: (nx, ny) => scene && scene.setPointer(nx, ny),
   });
 
-  // Layout settles once webfonts land, so refresh to put triggers on real numbers.
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+  initGlyphs({ reducedMotion, isMobile: mobile });
 
-  return three;
+  const { heroTimeline } = initScroll({ scene, reducedMotion, isMobile: mobile });
+
+  // ------------------------------------------------------ single render loop
+  if (scene) {
+    // Everything three.js and GSAP related shares this one ticker. No
+    // competing requestAnimationFrame loops anywhere in the project.
+    if (!reducedMotion) {
+      let last = performance.now();
+      let paused = false;
+
+      const tick = () => {
+        if (paused) return;
+        const now = performance.now();
+        const dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        scene.render(dt);
+      };
+
+      gsap.ticker.add(tick);
+
+      document.addEventListener('visibilitychange', () => {
+        paused = document.hidden;
+        last = performance.now();
+        gsap.ticker[paused ? 'sleep' : 'wake']();
+      });
+    }
+
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        if (isMobile()) return;
+        scene.resize();
+        if (reducedMotion) scene.assembleInstantly();
+      }, 160);
+    });
+
+    window.addEventListener('beforeunload', () => scene.dispose(), { once: true });
+  }
+
+  loader.set(1);
+
+  // ------------------------------------------------------------- curtain up
+  if (reducedMotion) {
+    if (scene) scene.assembleInstantly();
+    if (cursor.refresh) cursor.refresh();
+    return;
+  }
+
+  await loader.finish();
+
+  if (scene && heroTimeline) {
+    scene.heroEntrance({ onFlash: () => heroTimeline.play() });
+  } else if (heroTimeline) {
+    // No 3D here: the copy still arrives with the same rhythm, just unaccompanied.
+    gsap.delayedCall(0.25, () => heroTimeline.play());
+  }
+
+  if (cursor.refresh) cursor.refresh();
 }
 
-boot()
-  .then((three) => {
-    releaseReady();
-    return loaderFinished.then(() => {
-      playHeroEntrance(three);
-      ScrollTrigger.refresh();
-    });
-  })
-  .catch((error) => {
-    // Whatever went wrong, never strand the visitor behind the loading screen.
-    console.error(error);
-    releaseReady();
-  });
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot, { once: true });
+} else {
+  boot();
+}

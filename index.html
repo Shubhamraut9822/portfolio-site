@@ -1,361 +1,324 @@
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Shubham Raut, AI governance and ISO implementation consultant. ISO 27001, ISO 42001, SOC 2, GDPR and EU AI Act, built like a product."
-    />
-    <meta name="theme-color" content="#0A0A0B" />
-    <title>Shubham Raut | AI Governance &amp; ISO Implementation</title>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      document.documentElement.classList.remove('no-js');
-    </script>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Shubham Raut, AI Governance and ISO Implementation</title>
+  <meta name="description" content="AI governance and ISO implementation for companies that cannot afford to slow down. ISO 27001, ISO 42001, and EU AI Act, done properly." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Shubham Raut, AI Governance and ISO Implementation" />
+  <meta property="og:description" content="AI governance and ISO implementation for companies that cannot afford to slow down." />
+  <meta property="og:image" content="https://shubhamraut.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Shubham Raut" />
+  <meta property="og:url" content="https://shubhamraut.com/" />
+  <link rel="canonical" href="https://shubhamraut.com/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://shubhamraut.com/og.png" />
+  <noscript>
+    <style>
+      body { opacity: 1 !important; }
+      .loader { display: none !important; }
+      .reveal { opacity: 1 !important; }
+      .acc__panel { height: auto !important; }
+      .scene-canvas { display: none !important; }
+    </style>
+  </noscript>
+  <script type="module" src="/src/js/main.js"></script>
+</head>
 
-  <body data-page="home">
-    <!-- Loading screen: gates the experience until Three.js is ready -->
-    <div class="loader">
-      <div class="loader__name"></div>
-      <div class="loader__rule"></div>
-      <div class="loader__sub">AI Governance · ISO Implementation</div>
-      <div class="loader__dot"></div>
+<body>
+
+  <!-- ===================== LOADER ===================== -->
+  <div class="loader" data-loader role="status" aria-live="polite">
+    <div class="loader__stage">
+      <svg class="loader__ring" viewBox="0 0 220 220" aria-hidden="true">
+        <circle data-loader-ring cx="110" cy="110" r="90" />
+      </svg>
+      <div class="loader__seed" data-loader-seed aria-hidden="true"></div>
     </div>
+    <div class="loader__name" data-loader-name>SHUBHAM RAUT</div>
+    <div class="loader__status" data-loader-status>
+      <span><span class="deva">निर्माण</span> · NIRMANA</span>
+      <span data-loader-pct>000%</span>
+    </div>
+  </div>
 
-    <div class="page-veil" aria-hidden="true"></div>
-    <div class="noise" aria-hidden="true"></div>
-    <div class="cursor" aria-hidden="true"></div>
-
-    <!-- ============================= HEADER ============================= -->
-    <header class="site-header">
-      <div class="header__inner">
-        <a class="brand" href="index.html">Shubham Raut</a>
-        <nav class="nav-desktop" aria-label="Primary">
-          <a href="reference-build.html">Projects</a>
-          <a href="templates.html">Templates</a>
-          <a href="playbooks.html">Playbooks</a>
-          <a href="wizard.html">Wizard</a>
-          <a href="about.html">About</a>
-        </nav>
-        <div class="header__actions">
-          <a class="btn btn--primary btn--sm" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
-          <button
-            class="menu-toggle"
-            type="button"
-            aria-label="Open menu"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <button class="mobile-menu__close" type="button" aria-label="Close menu">&times;</button>
-      <nav aria-label="Mobile">
-        <a href="index.html" aria-current="page">Home</a>
-        <a href="reference-build.html">Projects</a>
-        <a href="templates.html">Templates</a>
-        <a href="playbooks.html">Playbooks</a>
-        <a href="wizard.html">Wizard</a>
-        <a href="about.html">About</a>
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <div class="header__inner">
+      <a class="brand" href="/">Shubham Raut</a>
+      <nav class="nav" data-nav aria-label="Primary">
+        <a class="nav-link" href="/proof-of-work">Proof of Work</a>
+        <a class="nav-link" href="/templates">Templates</a>
+        <a class="nav-link" href="/playbooks">Playbooks</a>
+        <a class="nav-link" href="/wizard">Wizard</a>
+        <a class="nav-link" href="/about">About</a>
       </nav>
-      <a class="btn btn--primary" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
+      <a class="btn btn--coral header__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+      <button class="burger" data-burger type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </header>
 
-    <!-- ======================= PARALLAX DEPTH STAGE ====================== -->
-    <div class="depth-stage" aria-hidden="true">
-      <!-- Layer 1: ghost text, 0.3x scroll speed -->
-      <div class="depth-track ghost-layer" data-speed="0.3">
-        <span
-          class="ghost-word"
-          data-align="left"
-          data-anchor="#hero"
-          data-offset="0.28"
-          style="--ghost-size: 20vw"
-          >27001</span
-        >
-        <span
-          class="ghost-word"
-          data-align="right"
-          data-anchor="#services"
-          data-offset="0.12"
-          style="--ghost-size: 15vw"
-          >GOVERNANCE</span
-        >
-        <span
-          class="ghost-word"
-          data-align="center"
-          data-anchor="#frameworks"
-          data-offset="0.1"
-          style="--ghost-size: 18vw"
-          >RISK</span
-        >
-        <span
-          class="ghost-word"
-          data-align="left"
-          data-anchor="#reference-teaser"
-          data-offset="0.12"
-          style="--ghost-size: 16vw"
-          >CONTROLS</span
-        >
-        <span
-          class="ghost-word"
-          data-align="right"
-          data-anchor="#wizard-teaser"
-          data-offset="0.12"
-          style="--ghost-size: 14vw; opacity: 0.04"
-          >AI ACT</span
-        >
-      </div>
+  <div class="menu" id="mobile-menu" data-menu>
+    <button class="menu__close" data-menu-close type="button" aria-label="Close menu"></button>
+    <a class="menu__link" href="/proof-of-work">Proof of Work</a>
+    <a class="menu__link" href="/templates">Templates</a>
+    <a class="menu__link" href="/playbooks">Playbooks</a>
+    <a class="menu__link" href="/wizard">Wizard</a>
+    <a class="menu__link" href="/about">About</a>
+    <a class="btn btn--coral menu__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+  </div>
 
-      <!-- Layer 2: gradient blobs, 0.6x scroll speed -->
-      <div class="depth-track blob-layer" data-speed="0.6">
-        <div class="blob blob--coral" data-anchor="#hero" data-offset="0.05" style="right: 2vw"></div>
-        <div
-          class="blob blob--blue"
-          data-anchor="#frameworks"
-          data-offset="0.3"
-          style="left: -6vw"
-        ></div>
-        <div
-          class="blob blob--warm"
-          data-anchor="#wizard-teaser"
-          data-offset="0.25"
-          style="right: 8vw"
-        ></div>
-      </div>
-    </div>
+  <!-- ===================== 3D CANVAS ===================== -->
+  <canvas class="scene-canvas" data-scene aria-hidden="true"></canvas>
 
-    <!-- Layer 3: The Compliance Architecture -->
-    <canvas class="webgl" aria-hidden="true"></canvas>
+  <main>
 
-    <!-- Layer 4: content -->
-    <main>
-      <!-- ============================ HERO ============================ -->
-      <section class="hero" id="hero">
-        <div class="hero__inner">
-          <span class="eyebrow" data-hero>AI Governance · ISO 27001 &amp; 42001</span>
-          <h1 class="h-display hero__title">
-            <span class="line"><span data-hero>AI governance</span></span>
-            <span class="line"><span data-hero>and ISO implementation,</span></span>
-            <span class="line"><span data-hero>built like a product.</span></span>
-          </h1>
-          <p class="lede" data-hero>
-            I help AI-first companies pass enterprise security and governance reviews, and get
-            certified fast.
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="home-col section__inner">
+          <p class="eyebrow">
+            <span class="eyebrow__en">AI Governance · ISO 27001 &amp; 42001</span>
           </p>
-          <div class="btn-row" data-hero>
-            <a class="btn btn--primary" href="reference-build.html">Explore the Projects</a>
-            <a class="btn btn--ghost" href="wizard.html">Try the Scoping Wizard</a>
+
+          <h1 class="display hero__headline">
+            <span class="line"><span class="line__inner">Built AI fast.</span></span>
+            <span class="line"><span class="line__inner">Now <em class="coral" style="font-style: normal;">prove</em></span></span>
+            <span class="line"><span class="line__inner">it's safe.</span></span>
+          </h1>
+
+          <p class="hero__sub">AI governance and ISO implementation for companies that can't afford to slow down.</p>
+
+          <div class="btn-row">
+            <a class="btn btn--coral" href="/proof-of-work"><span class="btn__label">See the Proof of Work</span></a>
+            <a class="btn btn--ghost" href="/wizard"><span class="btn__label">Try the Scoping Wizard</span></a>
           </div>
 
-          <!-- Mobile stand-in for the 3D structure: the same layered idea, in CSS -->
-          <div class="hero__mark" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </div>
+          <svg class="emblem" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <radialGradient id="emblemGlow">
+                <stop offset="0%" stop-color="#FF5436" stop-opacity="0.5" />
+                <stop offset="100%" stop-color="#FF5436" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="52" fill="url(#emblemGlow)" />
+            <circle cx="100" cy="100" r="13" fill="#FF5436" />
+            <g class="emblem__spin" fill="none" stroke="#F7F5F1" stroke-opacity="0.26" stroke-width="1">
+              <ellipse cx="100" cy="100" rx="70" ry="25" transform="rotate(12 100 100)" />
+              <ellipse cx="100" cy="100" rx="84" ry="34" transform="rotate(-38 100 100)" />
+              <ellipse cx="100" cy="100" rx="58" ry="47" transform="rotate(74 100 100)" />
+            </g>
+          </svg>
         </div>
+      </div>
 
-        <div class="scroll-cue" data-hero>
-          <span class="scroll-cue__chevron"></span>
-          <span class="scroll-cue__label">Scroll</span>
-        </div>
-      </section>
+      <div class="scroll-cue" aria-hidden="true">
+        <span class="scroll-cue__track"><span class="scroll-cue__dot"></span></span>
+        <span class="scroll-cue__label">SCROLL</span>
+      </div>
+    </section>
 
-      <!-- ========================== SERVICES ========================== -->
-      <section class="section" id="services">
-        <div class="section__inner">
-          <span class="eyebrow" data-reveal>Services</span>
-          <h2 class="h-section" data-reveal>What I do</h2>
+    <!-- ===================== WHAT I DO ===================== -->
+    <section class="section" data-ring="1" aria-labelledby="services-h">
+      <div class="ghost" aria-hidden="true">रक्षा</div>
+      <div class="glyph glyph--doc" data-glyph="document" style="top: 8%; right: 7vw;"></div>
+      <div class="thread" data-thread style="top: 0; height: 100%;"></div>
 
-          <div class="card-stack" data-reveal-group="left">
-            <article class="service-card">
+      <div class="wrap">
+        <div class="home-col section__inner">
+          <p class="eyebrow reveal">
+            <span class="eyebrow__en">Services</span>
+            <span class="eyebrow__sa">रक्षा · <span class="lat">RAKSHA</span></span>
+          </p>
+          <h2 class="h2 reveal" id="services-h">What I do</h2>
+
+          <div class="service-list" data-reveal-group>
+            <article class="card service-card reveal" data-reveal-x="-40">
               <h3>ISO 27001 Implementation</h3>
-              <p>Full ISMS build, from gap assessment to audit-ready certification.</p>
+              <p>Full ISMS build, from gap assessment to audit ready certification.</p>
             </article>
-            <article class="service-card">
-              <h3>AI Governance (ISO 42001 / EU AI Act)</h3>
+            <article class="card service-card reveal" data-reveal-x="-40">
+              <h3>AI Governance, ISO 42001 and EU AI Act</h3>
               <p>Governance frameworks for companies building or deploying AI systems.</p>
             </article>
-            <article class="service-card">
+            <article class="card service-card reveal" data-reveal-x="-40">
               <h3>Enterprise Review Readiness</h3>
               <p>Pass the security and AI questionnaires that block your enterprise deals.</p>
             </article>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ========================= FRAMEWORKS ========================= -->
-      <section class="section" id="frameworks">
-        <div class="section__inner">
-          <span class="eyebrow" data-reveal>Frameworks</span>
-          <h2 class="h-section" data-reveal>Frameworks I work across</h2>
-        </div>
+    <!-- ===================== FRAMEWORKS ===================== -->
+    <section class="section" data-ring="2" aria-labelledby="frameworks-h">
+      <div class="ghost" aria-hidden="true">अनुशासन</div>
+      <div class="glyph glyph--check" data-glyph="check" style="top: 14%; right: 9vw;"></div>
 
-        <!-- The tile set is duplicated so the -50% loop is seamless -->
-        <div class="ticker ticker--bleed" data-reveal="fade">
-          <div class="ticker__track">
-            <div class="ticker__group">
-              <span class="ticker__item">ISO 27001</span>
-              <span class="ticker__item">ISO 42001</span>
-              <span class="ticker__item">SOC 2</span>
-              <span class="ticker__item">GDPR</span>
-              <span class="ticker__item">EU AI Act</span>
-              <span class="ticker__item">DPDPA</span>
-              <span class="ticker__item">NIST AI RMF</span>
-              <span class="ticker__item">HIPAA</span>
-              <span class="ticker__item">PCI DSS</span>
-            </div>
-            <div class="ticker__group" aria-hidden="true">
-              <span class="ticker__item">ISO 27001</span>
-              <span class="ticker__item">ISO 42001</span>
-              <span class="ticker__item">SOC 2</span>
-              <span class="ticker__item">GDPR</span>
-              <span class="ticker__item">EU AI Act</span>
-              <span class="ticker__item">DPDPA</span>
-              <span class="ticker__item">NIST AI RMF</span>
-              <span class="ticker__item">HIPAA</span>
-              <span class="ticker__item">PCI DSS</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ======================= PROJECTS TEASER ======================= -->
-      <section class="section section--alt" id="reference-teaser">
-        <div class="section__inner">
-          <span class="eyebrow" data-reveal>Flagship Project</span>
-          <h2 class="h-section" data-reveal>See a complete implementation, in the open.</h2>
-          <p class="body-text" data-reveal style="max-width: 520px; margin-top: 28px">
-            A full, end-to-end compliance implementation for a fictional AI company. Every policy,
-            control, risk register, and audit report, published openly. This is a public reference
-            architecture, not a past client.
+      <div class="wrap">
+        <div class="home-col section__inner">
+          <p class="eyebrow reveal">
+            <span class="eyebrow__en">Frameworks</span>
+            <span class="eyebrow__sa">अनुशासन · <span class="lat">ANUSHASANA</span></span>
           </p>
+          <h2 class="h2 reveal" id="frameworks-h">Frameworks I work across</h2>
+        </div>
+      </div>
 
-          <div class="stats" data-reveal-group="up">
-            <div class="stat">
-              <div class="stat__value" data-count="35" data-count-suffix="+">0+</div>
+      <div class="marquee">
+        <div class="marquee__track" data-marquee>
+          <span class="fw-tile">ISO 27001</span>
+          <span class="fw-tile">ISO 42001</span>
+          <span class="fw-tile">EU AI Act</span>
+          <span class="fw-tile">SOC 2</span>
+          <span class="fw-tile">GDPR</span>
+          <span class="fw-tile">DPDPA</span>
+          <span class="fw-tile">NIST AI RMF</span>
+          <span class="fw-tile">HIPAA</span>
+          <span class="fw-tile">PCI DSS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PROOF OF WORK TEASER ===================== -->
+    <section class="section section--alt" data-ring="3" aria-labelledby="proof-h">
+      <div class="ghost" aria-hidden="true">प्रमाण</div>
+      <div class="glyph glyph--lens" data-glyph="lens" style="top: 10%; right: 8vw;"></div>
+      <div class="thread" data-thread style="top: 20%; height: 80%;"></div>
+
+      <div class="wrap">
+        <div class="home-col section__inner">
+          <p class="eyebrow reveal">
+            <span class="eyebrow__en">Flagship Project</span>
+            <span class="eyebrow__sa">प्रमाण · <span class="lat">PRAMANA</span></span>
+          </p>
+          <h2 class="h2 reveal" id="proof-h">See a complete implementation, in the open.</h2>
+          <p class="body reveal" style="margin-top: 24px;">A full, end to end compliance implementation for a fictional AI company. Every policy, control, risk register, and audit report, published openly. This is a public reference architecture, not a past client.</p>
+
+          <div class="stats" data-reveal-group>
+            <div class="stat reveal">
+              <div class="stat__figure" data-count="35" data-count-suffix="+">0+</div>
               <div class="stat__label">Artifacts</div>
             </div>
-            <div class="stat">
-              <div class="stat__value" data-count="6">0</div>
+            <div class="stat reveal">
+              <div class="stat__figure" data-count="6">0</div>
               <div class="stat__label">Frameworks</div>
             </div>
-            <div class="stat">
-              <div class="stat__value" data-count="7">0</div>
+            <div class="stat reveal">
+              <div class="stat__figure" data-count="7">0</div>
               <div class="stat__label">Document Groups</div>
             </div>
           </div>
 
-          <div class="btn-row" data-reveal>
-            <a class="btn btn--primary" href="reference-build.html"
-              >Explore the Projects →</a
-            >
+          <div class="btn-row reveal">
+            <a class="btn btn--coral" href="/proof-of-work"><span class="btn__label">Explore the Proof of Work</span></a>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ======================== WIZARD TEASER ======================== -->
-      <section class="section" id="wizard-teaser">
-        <div class="section__inner">
-          <span class="eyebrow" data-reveal>Interactive Tool</span>
-          <h2 class="h-section" data-reveal>
-            Not sure what applies to you? Find out in 60 seconds.
-          </h2>
-          <p class="body-text" data-reveal style="max-width: 520px; margin-top: 28px">
-            Answer a few questions about your company, your AI usage, and your target markets, then get
-            an instant scoping report with applicable standards, required documents, and a timeline
-            estimate.
+    <!-- ===================== WIZARD TEASER ===================== -->
+    <section class="section" data-ring="4" aria-labelledby="wizard-h">
+      <div class="ghost" aria-hidden="true">मार्ग</div>
+      <div class="glyph glyph--compass" data-glyph="compass" style="top: 12%; right: 7vw;"></div>
+
+      <div class="wrap">
+        <div class="home-col section__inner">
+          <p class="eyebrow reveal">
+            <span class="eyebrow__en">Interactive Tool</span>
+            <span class="eyebrow__sa">मार्ग · <span class="lat">MARGA</span></span>
           </p>
+          <h2 class="h2 reveal" id="wizard-h">Not sure what applies to you? Find out in 60 seconds.</h2>
+          <p class="body reveal" style="margin-top: 24px;">Answer a few questions about your company, your AI usage, and your target markets. Get an instant scoping report with the standards that apply, the documents you will need, and a timeline estimate.</p>
 
-          <!-- Purely decorative preview: none of this is interactive -->
-          <div class="wizard-preview" data-reveal aria-hidden="true">
-            <div class="wizard-preview__bar"><span></span><span></span><span></span></div>
+          <div class="mock reveal" aria-hidden="true">
+            <div class="mock__step">STEP 01 OF 04</div>
+            <div class="mock__bar"><span></span></div>
 
-            <div class="fake-field">
-              <div class="fake-field__label">Sector</div>
-              <div class="fake-select">B2B SaaS</div>
+            <div class="mock__field">
+              <div class="mock__label">Sector</div>
+              <div class="mock__select"><span>Select your sector</span><span class="chev">▾</span></div>
             </div>
 
-            <div class="fake-field">
-              <div class="fake-field__label">AI Usage</div>
-              <div class="fake-checks">
-                <div class="fake-check is-on">Foundation model APIs</div>
-                <div class="fake-check is-on">Fine-tuned models</div>
-                <div class="fake-check">In-house training</div>
-              </div>
+            <div class="mock__field">
+              <div class="mock__label">AI Usage</div>
+              <div class="mock__checks"><i></i><i></i><i></i></div>
             </div>
 
-            <div class="fake-field">
-              <div class="fake-field__label">Target Markets</div>
-              <div class="fake-tags">
-                <span class="fake-tag">US</span>
-                <span class="fake-tag">EU</span>
-                <span class="fake-tag">UK</span>
-              </div>
+            <div class="mock__field">
+              <div class="mock__label">Target Markets</div>
+              <div class="mock__tags"><b>US</b><b>EU</b><b>UK</b></div>
             </div>
 
-            <div class="fake-btn">Get Scoping Report</div>
+            <div class="mock__btn">Get Scoping Report</div>
           </div>
 
-          <div class="btn-row" data-reveal>
-            <a class="btn btn--primary" href="wizard.html">Try the Wizard →</a>
+          <div class="btn-row reveal">
+            <a class="btn btn--ghost" href="/wizard"><span class="btn__label">Try the Wizard</span></a>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- ========================== CLOSING CTA ========================== -->
-      <section class="section section--alt cta" id="contact">
-        <h2 class="h-section" data-reveal>Building with AI and losing deals to security reviews?</h2>
-        <p class="cta__sub" data-reveal>Let's fix that.</p>
-        <a class="btn btn--primary btn--lg" href="mailto:shubhamraut9822@gmail.com" data-reveal
-          >Book a call</a
-        >
-        <a class="cta__mail" href="mailto:shubhamraut9822@gmail.com">shubhamraut9822@gmail.com</a>
-      </section>
-    </main>
+    <!-- ===================== CLOSING CTA ===================== -->
+    <section class="section section--alt section--center" data-finale aria-labelledby="closing-h">
+      <div class="ghost ghost--center" aria-hidden="true">आरम्भ</div>
+      <div class="glyph glyph--seal" data-glyph="seal" style="top: 4%; right: 6vw;"></div>
 
-    <!-- ============================= FOOTER ============================= -->
-    <footer class="site-footer">
-      <div class="site-footer__ghost" aria-hidden="true">SR</div>
-      <div class="footer__inner">
+      <div class="wrap">
+        <div class="section__inner">
+          <h2 class="h2 reveal" id="closing-h" style="max-width: 18ch; margin-inline: auto;">Building with AI and losing deals to security reviews?</h2>
+          <p class="body reveal" style="margin-top: 20px;">Let's fix that.</p>
+          <div class="btn-row reveal" style="justify-content: center;">
+            <a class="btn btn--coral btn--lg" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+          </div>
+          <p class="mono reveal" style="margin-top: 26px; color: var(--text-secondary);">
+            <a href="mailto:shubhamraut9822@gmail.com">shubhamraut9822@gmail.com</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="footer__ghost" aria-hidden="true">सुरक्षा</div>
+    <div class="wrap">
+      <div class="footer__grid">
         <div>
-          <div class="footer__brand">Shubham Raut</div>
-          <p class="footer__tagline">AI Governance &amp; ISO Implementation</p>
+          <div class="footer__name">Shubham Raut</div>
+          <div class="footer__role">AI Governance and ISO Implementation</div>
         </div>
         <div>
-          <div class="footer__heading">Pages</div>
-          <div class="footer__links">
-            <a href="reference-build.html">Projects</a>
-            <a href="templates.html">Templates</a>
-            <a href="playbooks.html">Playbooks</a>
-            <a href="wizard.html">Wizard</a>
-            <a href="about.html">About</a>
+          <div class="footer__head">Pages</div>
+          <div class="footer__list">
+            <a href="/proof-of-work">Proof of Work</a>
+            <a href="/templates">Templates</a>
+            <a href="/playbooks">Playbooks</a>
+            <a href="/wizard">Wizard</a>
+            <a href="/about">About</a>
           </div>
         </div>
         <div>
-          <div class="footer__heading">Connect</div>
-          <div class="footer__links">
-            <a href="https://www.linkedin.com/in/shura-ssr" target="_blank" rel="noopener noreferrer"
-              >LinkedIn ↗</a
-            >
-            <a href="mailto:shubhamraut9822@gmail.com">Email ↗</a>
+          <div class="footer__head">Connect</div>
+          <div class="footer__list">
+            <a class="arrow-link" href="https://www.linkedin.com/in/shubhamraut" target="_blank" rel="noopener noreferrer">LinkedIn <span class="arrow" aria-hidden="true">↗</span></a>
+            <a class="arrow-link" href="mailto:shubhamraut9822@gmail.com">Email <span class="arrow" aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
       <div class="footer__bottom">© 2026 Shubham Raut. Built and maintained by one person.</div>
-    </footer>
+    </div>
+  </footer>
 
-    <script type="module" src="/src/js/main.js"></script>
-  </body>
+  <div class="grain" aria-hidden="true"></div>
+
+</body>
 </html>

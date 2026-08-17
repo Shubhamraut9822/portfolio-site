@@ -1,164 +1,148 @@
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="AI Compliance Scoping Wizard. Find out which standards apply to your company, which documents you need, and how long implementation takes."
-    />
-    <meta name="theme-color" content="#0A0A0B" />
-    <title>Scoping Wizard | Shubham Raut</title>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      document.documentElement.classList.remove('no-js');
-    </script>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Scoping Wizard, Shubham Raut, AI Governance and ISO Implementation</title>
+  <meta name="description" content="An AI compliance scoping wizard. Find out which standards apply to you, which documents you need, and how long implementation will take." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Scoping Wizard, Shubham Raut, AI Governance and ISO Implementation" />
+  <meta property="og:description" content="Find out which standards apply to you, and what implementation will take." />
+  <meta property="og:image" content="https://shubhamraut.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Shubham Raut" />
+  <meta property="og:url" content="https://shubhamraut.com/wizard" />
+  <link rel="canonical" href="https://shubhamraut.com/wizard" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://shubhamraut.com/og.png" />
+  <noscript>
+    <style>
+      body { opacity: 1 !important; }
+      .loader { display: none !important; }
+      .reveal { opacity: 1 !important; }
+      .acc__panel { height: auto !important; }
+      .scene-canvas { display: none !important; }
+    </style>
+  </noscript>
+  <script type="module" src="/src/js/main.js"></script>
+</head>
 
-  <body data-page="wizard">
-    <div class="page-veil" aria-hidden="true"></div>
-    <div class="noise" aria-hidden="true"></div>
-    <div class="cursor" aria-hidden="true"></div>
+<body>
 
-    <header class="site-header">
-      <div class="header__inner">
-        <a class="brand" href="index.html">Shubham Raut</a>
-        <nav class="nav-desktop" aria-label="Primary">
-          <a href="reference-build.html">Projects</a>
-          <a href="templates.html">Templates</a>
-          <a href="playbooks.html">Playbooks</a>
-          <a href="wizard.html" aria-current="page">Wizard</a>
-          <a href="about.html">About</a>
-        </nav>
-        <div class="header__actions">
-          <a class="btn btn--primary btn--sm" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
-          <button
-            class="menu-toggle"
-            type="button"
-            aria-label="Open menu"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <button class="mobile-menu__close" type="button" aria-label="Close menu">&times;</button>
-      <nav aria-label="Mobile">
-        <a href="index.html">Home</a>
-        <a href="reference-build.html">Projects</a>
-        <a href="templates.html">Templates</a>
-        <a href="playbooks.html">Playbooks</a>
-        <a href="wizard.html" aria-current="page">Wizard</a>
-        <a href="about.html">About</a>
+  <header class="header">
+    <div class="header__inner">
+      <a class="brand" href="/">Shubham Raut</a>
+      <nav class="nav" data-nav aria-label="Primary">
+        <a class="nav-link" href="/proof-of-work">Proof of Work</a>
+        <a class="nav-link" href="/templates">Templates</a>
+        <a class="nav-link" href="/playbooks">Playbooks</a>
+        <a class="nav-link" href="/wizard">Wizard</a>
+        <a class="nav-link" href="/about">About</a>
       </nav>
-      <a class="btn btn--primary" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
+      <a class="btn btn--coral header__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+      <button class="burger" data-burger type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </header>
 
-    <div class="depth-stage" aria-hidden="true">
-      <div class="depth-track ghost-layer" data-speed="0.3">
-        <span class="ghost-word" data-align="left" style="--ghost-size: 20vw; top: 18vh"
-          >WIZARD</span
-        >
+  <div class="menu" id="mobile-menu" data-menu>
+    <button class="menu__close" data-menu-close type="button" aria-label="Close menu"></button>
+    <a class="menu__link" href="/proof-of-work">Proof of Work</a>
+    <a class="menu__link" href="/templates">Templates</a>
+    <a class="menu__link" href="/playbooks">Playbooks</a>
+    <a class="menu__link" href="/wizard">Wizard</a>
+    <a class="menu__link" href="/about">About</a>
+    <a class="btn btn--coral menu__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+  </div>
+
+  <main>
+
+    <section class="page-head">
+      <div class="blob blob--coral" style="top: -50px; left: -150px;"></div>
+      <div class="blob blob--blue" style="top: 380px; right: -150px;"></div>
+      <div class="ghost" aria-hidden="true" style="top: 16%;">मार्ग</div>
+      <div class="glyph glyph--compass" data-glyph="compass" style="top: 26%; right: 6vw;"></div>
+
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+          <p class="eyebrow reveal"><span class="eyebrow__en">Scoping Wizard</span></p>
+          <h1 class="display reveal">AI Compliance Scoping Wizard</h1>
+          <p class="body reveal">Answer a few questions about your company, AI usage, and target markets. Get an instant scoping report with applicable standards, required documents, and a timeline estimate.</p>
+        </div>
       </div>
-      <div class="depth-track blob-layer" data-speed="0.6">
-        <div class="blob blob--coral" style="top: 10vh; right: 2vw"></div>
-        <div class="blob blob--warm" style="top: 90vh; left: -4vw"></div>
+    </section>
+
+    <section class="section" style="padding-top: 0;" aria-label="What the wizard gives you">
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+
+          <div class="feature-list" data-reveal-group>
+            <div class="feature reveal">
+              <span class="feature__dash" aria-hidden="true">-</span>
+              <div class="feature__name">Instant framework mapping</div>
+              <p class="feature__desc">Find out which standards and regulations apply to your specific situation.</p>
+            </div>
+            <div class="feature reveal">
+              <span class="feature__dash" aria-hidden="true">-</span>
+              <div class="feature__name">Document checklist</div>
+              <p class="feature__desc">See exactly which policies, procedures, and registers you will need to produce.</p>
+            </div>
+            <div class="feature reveal">
+              <span class="feature__dash" aria-hidden="true">-</span>
+              <div class="feature__name">Timeline estimate</div>
+              <p class="feature__desc">Get a rough estimate of how long implementation will take.</p>
+            </div>
+          </div>
+
+          <div class="status-card reveal">
+            <div class="status-card__tag">STATUS: IN DEVELOPMENT</div>
+            <h2 class="h2">Coming soon.</h2>
+            <p class="body" style="margin-inline: auto;">The interactive wizard is currently being built. In the meantime, I can run this scoping exercise with you live. Book a call and I will walk through it in under 10 minutes.</p>
+            <div class="btn-row" style="justify-content: center;">
+              <a class="btn btn--coral" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+            </div>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </section>
 
-    <main>
-      <section class="page-header">
-        <div class="container">
-          <span class="eyebrow" data-reveal>Scoping Wizard</span>
-          <h1 class="h-display" data-reveal>AI Compliance Scoping Wizard</h1>
-          <p class="body-text" data-reveal>
-            Answer a few questions about your company, AI usage, and target markets, then get an instant
-            scoping report with applicable standards, required documents, and a timeline estimate.
-          </p>
-        </div>
-      </section>
+  </main>
 
-      <section class="section" style="padding-top: 0">
-        <div class="container">
-          <div class="feature-list" data-reveal-group="up">
-            <div class="feature">
-              <div class="feature__title">Instant framework mapping</div>
-              <p class="feature__desc">
-                Find out which standards and regulations apply to your specific situation.
-              </p>
-            </div>
-            <div class="feature">
-              <div class="feature__title">Document checklist</div>
-              <p class="feature__desc">
-                See which policies, procedures, and registers you'll need to produce.
-              </p>
-            </div>
-            <div class="feature">
-              <div class="feature__title">Timeline estimate</div>
-              <p class="feature__desc">
-                Get a rough estimate of how long implementation will take.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--alt">
-        <div class="container">
-          <div class="status-card" data-reveal>
-            <div class="status-card__label">STATUS: IN DEVELOPMENT</div>
-            <h2>Coming soon.</h2>
-            <p>
-              The interactive wizard is currently being built. In the meantime, I can run this
-              scoping exercise with you live. Book a call and I'll walk through it in under 10
-              minutes.
-            </p>
-            <a class="btn btn--primary" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <div class="site-footer__ghost" aria-hidden="true">SR</div>
-      <div class="footer__inner">
+  <footer class="footer">
+    <div class="footer__ghost" aria-hidden="true">सुरक्षा</div>
+    <div class="wrap">
+      <div class="footer__grid">
         <div>
-          <div class="footer__brand">Shubham Raut</div>
-          <p class="footer__tagline">AI Governance &amp; ISO Implementation</p>
+          <div class="footer__name">Shubham Raut</div>
+          <div class="footer__role">AI Governance and ISO Implementation</div>
         </div>
         <div>
-          <div class="footer__heading">Pages</div>
-          <div class="footer__links">
-            <a href="reference-build.html">Projects</a>
-            <a href="templates.html">Templates</a>
-            <a href="playbooks.html">Playbooks</a>
-            <a href="wizard.html">Wizard</a>
-            <a href="about.html">About</a>
+          <div class="footer__head">Pages</div>
+          <div class="footer__list">
+            <a href="/proof-of-work">Proof of Work</a>
+            <a href="/templates">Templates</a>
+            <a href="/playbooks">Playbooks</a>
+            <a href="/wizard">Wizard</a>
+            <a href="/about">About</a>
           </div>
         </div>
         <div>
-          <div class="footer__heading">Connect</div>
-          <div class="footer__links">
-            <a href="https://www.linkedin.com/in/shura-ssr" target="_blank" rel="noopener noreferrer"
-              >LinkedIn ↗</a
-            >
-            <a href="mailto:shubhamraut9822@gmail.com">Email ↗</a>
+          <div class="footer__head">Connect</div>
+          <div class="footer__list">
+            <a class="arrow-link" href="https://www.linkedin.com/in/shubhamraut" target="_blank" rel="noopener noreferrer">LinkedIn <span class="arrow" aria-hidden="true">↗</span></a>
+            <a class="arrow-link" href="mailto:shubhamraut9822@gmail.com">Email <span class="arrow" aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
       <div class="footer__bottom">© 2026 Shubham Raut. Built and maintained by one person.</div>
-    </footer>
+    </div>
+  </footer>
 
-    <script type="module" src="/src/js/main.js"></script>
-  </body>
+  <div class="grain" aria-hidden="true"></div>
+
+</body>
 </html>

@@ -1,107 +1,183 @@
+import gsap from 'gsap';
+
 /**
- * Loading screen.
- *
- * Plays a ~3s letter-by-letter assembly of the name lockup while the rest of
- * the site (notably Three.js) initialises behind it. The screen is a real gate:
- * it will not dismiss until the `ready` promise resolves, and if that takes
- * longer than the animation a pulsing dot holds the frame.
+ * Loading screen. Gates the reveal of the site until the scene is initialised.
+ * Progress is real: main.js feeds it milestones. A slow auto-ramp keeps the
+ * counter alive between milestones so it never stalls at a round number.
  */
-import { gsap } from 'gsap';
-import { prefersReducedMotion } from './env.js';
+export function createLoader({ reducedMotion = false, isMobile = false } = {}) {
+  const el = document.querySelector('[data-loader]');
+  if (!el) {
+    return {
+      set() {},
+      finish: () => Promise.resolve(),
+    };
+  }
 
-const NAME = 'SHUBHAM RAUT';
+  const nameEl = el.querySelector('[data-loader-name]');
+  const seed = el.querySelector('[data-loader-seed]');
+  const ringPath = el.querySelector('[data-loader-ring]');
+  const status = el.querySelector('[data-loader-status]');
+  const pctEl = el.querySelector('[data-loader-pct]');
 
-function buildMarkup(loader) {
-  const nameEl = loader.querySelector('.loader__name');
-  if (!nameEl) return [];
+  const MIN_DURATION = isMobile ? 1.8 : 2.6;
+  const started = performance.now();
 
-  // Split into per-character spans so each one can be staggered independently.
-  const chars = [...NAME].map((char) => {
+  // Split the name into per-character spans for the blur-resolve.
+  const label = nameEl.textContent.trim();
+  nameEl.textContent = '';
+  const chars = [...label].map((ch) => {
     const span = document.createElement('span');
     span.className = 'loader__char';
-    span.textContent = char === ' ' ? ' ' : char;
-    span.setAttribute('aria-hidden', 'true');
+    span.textContent = ch === ' ' ? ' ' : ch;
     nameEl.appendChild(span);
     return span;
   });
+  nameEl.setAttribute('aria-label', label);
 
-  // Keep the accessible name intact for screen readers.
-  nameEl.setAttribute('aria-label', NAME);
-  nameEl.setAttribute('role', 'text');
+  const circumference = ringPath ? 2 * Math.PI * Number(ringPath.getAttribute('r')) : 0;
+  if (ringPath) {
+    ringPath.style.strokeDasharray = `${circumference}`;
+    ringPath.style.strokeDashoffset = `${circumference}`;
+  }
 
-  return chars;
-}
+  // --- reduced motion: no theatre, just get out of the way -----------------
+  if (reducedMotion) {
+    el.remove();
+    return { set() {}, finish: () => Promise.resolve() };
+  }
 
-/**
- * @param {Promise} ready Resolves when the rest of the site has finished booting.
- * @returns {Promise<void>} Resolves once the loader has left the DOM.
- */
-export function initLoader(ready) {
-  const loader = document.querySelector('.loader');
-  document.body.classList.add('is-loading');
+  const state = { pct: 0 };
+  let target = 0;
+  let ramp = null;
 
-  const finish = () => {
-    document.body.classList.remove('is-loading');
-    loader?.remove();
+  const paint = () => {
+    const v = Math.round(state.pct);
+    if (pctEl) pctEl.textContent = `${String(v).padStart(3, '0')}%`;
+    if (ringPath) {
+      ringPath.style.strokeDashoffset = `${circumference * (1 - state.pct / 100)}`;
+    }
   };
 
-  if (!loader) {
-    document.body.classList.remove('is-loading');
-    return ready.catch(() => {});
-  }
+  paint();
 
-  const chars = buildMarkup(loader);
-  const rule = loader.querySelector('.loader__rule');
-  const sub = loader.querySelector('.loader__sub');
-  const dot = loader.querySelector('.loader__dot');
-
-  if (prefersReducedMotion()) {
-    // Static lockup, dismissed as soon as the site is ready.
-    gsap.set([...chars], { opacity: 1, y: 0 });
-    gsap.set(rule, { width: 60 });
-    gsap.set(sub, { opacity: 1 });
-    return ready
-      .catch(() => {})
-      .then(() => new Promise((resolve) => setTimeout(() => { finish(); resolve(); }, 200)));
-  }
-
-  const readySettled = ready.catch(() => {});
-
-  // ~2.9s of choreography: letters → hold → rule → subtitle → hold.
+  // --- entrance ------------------------------------------------------------
   const tl = gsap.timeline();
 
-  tl.to(chars, {
-    opacity: 1,
-    y: 0,
-    duration: 0.5,
-    ease: 'power3.out',
-    stagger: 0.06,
-  })
-    .to(rule, { width: 60, duration: 0.3, ease: 'power2.inOut' }, '+=0.4')
-    .to(sub, { opacity: 1, duration: 0.3, ease: 'power2.out' })
-    .to({}, { duration: 0.6 }); // hold the complete lockup
+  tl.to(seed, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0);
+  tl.to(
+    seed,
+    {
+      scale: 1.25,
+      opacity: 0.6,
+      duration: 0.8,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true,
+    },
+    0.2
+  );
 
-  const animation = tl.then();
+  tl.to(
+    chars,
+    {
+      opacity: 1,
+      filter: 'blur(0px)',
+      scale: 1,
+      duration: 0.5,
+      ease: 'power2.out',
+      stagger: 0.055,
+    },
+    0.3
+  );
 
-  return Promise.all([animation, readySettled])
-    .then(() => {
-      // If Three.js was the slow one, the pulse dot is running, so stop it first.
-      if (dot) gsap.killTweensOf(dot);
-      return gsap.to(loader, { opacity: 0, duration: 0.5, ease: 'power2.inOut' }).then();
-    })
-    .then(finish)
-    .catch(() => finish());
-}
+  tl.to(status, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.6);
 
-/** Shows the pulsing "still loading" dot. Called by main.js if boot runs long. */
-export function showLoaderPulse() {
-  const dot = document.querySelector('.loader__dot');
-  if (!dot || prefersReducedMotion()) return;
-  gsap.to(dot, {
-    opacity: 0.9,
-    duration: 0.5,
-    repeat: -1,
-    yoyo: true,
-    ease: 'sine.inOut',
+  gsap.set(chars, { scale: 1.06 });
+
+  /** Feed real progress in, 0 to 1. */
+  function set(value) {
+    target = Math.max(target, Math.min(1, value) * 100);
+    if (ramp) ramp.kill();
+    ramp = gsap.to(state, {
+      pct: target,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: paint,
+    });
+  }
+
+  // Creep forward slowly so the counter is never frozen between milestones.
+  const creep = gsap.to(state, {
+    duration: MIN_DURATION,
+    ease: 'none',
+    onUpdate() {
+      const drift = Math.min(88, (creep.progress() * 100) ** 0.92);
+      if (drift > state.pct) {
+        state.pct = drift;
+        paint();
+      }
+    },
   });
+
+  /**
+   * Runs the exit. Resolves when the disperse starts, so the hero entrance can
+   * overlap with the loader clearing.
+   */
+  function finish() {
+    return new Promise((resolve) => {
+      const elapsed = (performance.now() - started) / 1000;
+      const wait = Math.max(0, MIN_DURATION - elapsed);
+
+      gsap.delayedCall(wait, () => {
+        creep.kill();
+        if (ramp) ramp.kill();
+
+        // Never snap to 100, always ease into it.
+        gsap.to(state, {
+          pct: 100,
+          duration: 0.4,
+          ease: 'power2.out',
+          onUpdate: paint,
+          onComplete: () => {
+            const out = gsap.timeline({
+              delay: 0.45,
+              onComplete: () => el.remove(),
+            });
+
+            // Disperse like clearing smoke, staggered outward from the centre.
+            out.to(
+              chars,
+              {
+                opacity: 0,
+                filter: 'blur(14px)',
+                scale: 1.08,
+                duration: 0.7,
+                ease: 'power2.inOut',
+                stagger: { each: 0.03, from: 'center' },
+              },
+              0
+            );
+            out.to(
+              [seed, el.querySelector('.loader__ring'), status],
+              {
+                opacity: 0,
+                filter: 'blur(14px)',
+                scale: 1.08,
+                duration: 0.7,
+                ease: 'power2.inOut',
+              },
+              0
+            );
+            out.to(el, { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0.45);
+
+            // Hand off early so the hero begins while the loader is still clearing.
+            gsap.delayedCall(0.1, resolve);
+          },
+        });
+      });
+    });
+  }
+
+  return { set, finish };
 }

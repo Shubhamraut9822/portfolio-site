@@ -1,212 +1,259 @@
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * Shared interface behaviour used across every page: the header, the mobile
- * overlay menu, page-to-page fade transitions, and the two page-specific
- * widgets (the Reference Build accordion and the Templates filter).
+ * The site is served with clean URLs, so /about, /about.html and /about/ are
+ * all the same page. Everything that compares locations goes through here.
  */
-import { gsap } from 'gsap';
-import { prefersReducedMotion } from './env.js';
-import { getLenis } from './scroll-animations.js';
-
-/* -------------------------------------------------------------------------- */
-/* Header                                                                     */
-/* -------------------------------------------------------------------------- */
-
-/** Swaps the header to its blurred state once the page has scrolled 50px. */
-export function initHeader() {
-  const header = document.querySelector('.site-header');
-  if (!header) return;
-
-  const update = () => {
-    const y = getLenis()?.scroll ?? window.scrollY;
-    header.classList.toggle('is-scrolled', y > 50);
-  };
-
-  update();
-  gsap.ticker.add(update);
+function normalisePath(pathname) {
+  const p = pathname
+    .replace(/\/index(\.html)?$/i, '/')
+    .replace(/\.html$/i, '')
+    .replace(/(.)\/$/, '$1');
+  return p === '' ? '/' : p;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Mobile menu                                                                */
-/* -------------------------------------------------------------------------- */
+export function initUI({ reducedMotion = false } = {}) {
+  markCurrentPage();
+  initHeader();
+  initMobileMenu();
+  initMarquee();
+  initAccordions({ reducedMotion });
+  initFilters({ reducedMotion });
+  initCounters({ reducedMotion });
+  initPageTransitions({ reducedMotion });
+}
 
-export function initMobileMenu() {
-  const toggle = document.querySelector('.menu-toggle');
-  const menu = document.querySelector('.mobile-menu');
-  const close = document.querySelector('.mobile-menu__close');
-  if (!toggle || !menu) return;
+/* -------------------------------------------------------------- nav state */
+
+function markCurrentPage() {
+  const here = normalisePath(window.location.pathname);
+  document.querySelectorAll('[data-nav] a').forEach((a) => {
+    if (normalisePath(new URL(a.href).pathname) !== here) return;
+    a.classList.add('is-current');
+    a.setAttribute('aria-current', 'page');
+  });
+}
+
+/* ----------------------------------------------------------------- header */
+
+function initHeader() {
+  const header = document.querySelector('.header');
+  if (!header) return;
+
+  const update = () => header.classList.toggle('is-scrolled', window.scrollY > 60);
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+}
+
+/* ------------------------------------------------------------ mobile menu */
+
+function initMobileMenu() {
+  const burger = document.querySelector('[data-burger]');
+  const menu = document.querySelector('[data-menu]');
+  if (!burger || !menu) return;
+
+  const close = menu.querySelector('[data-menu-close]');
+  const links = [...menu.querySelectorAll('.menu__link')];
+
+  links.forEach((l, i) => {
+    l.style.animationDelay = `${0.08 + i * 0.06}s`;
+  });
 
   const setOpen = (open) => {
     menu.classList.toggle('is-open', open);
-    menu.setAttribute('aria-hidden', String(!open));
-    toggle.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
-    // Lenis keeps scrolling the page underneath unless it is explicitly stopped.
-    if (open) getLenis()?.stop();
-    else getLenis()?.start();
   };
 
-  toggle.addEventListener('click', () => setOpen(!menu.classList.contains('is-open')));
-  close?.addEventListener('click', () => setOpen(false));
-  menu.querySelectorAll('a').forEach((link) =>
-    link.addEventListener('click', () => setOpen(false))
-  );
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && menu.classList.contains('is-open')) setOpen(false);
+  burger.addEventListener('click', () => setOpen(true));
+  if (close) close.addEventListener('click', () => setOpen(false));
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
   });
 }
 
-/* -------------------------------------------------------------------------- */
-/* Page transitions                                                           */
-/* -------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------- marquee */
 
-/**
- * Fades the current page out before navigating to another page of the site.
- * External links, new-tab clicks, mailto and in-page anchors are left alone.
- */
-export function initPageTransitions() {
-  const veil = document.querySelector('.page-veil');
-  if (!veil) return;
-
-  const reduced = prefersReducedMotion();
-
-  document.addEventListener('click', (event) => {
-    if (event.defaultPrevented || event.button !== 0) return;
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
-    const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
-    if (!link) return;
-
-    const href = link.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
-      return;
-    }
-    if (link.target === '_blank' || link.hasAttribute('download')) return;
-
-    const url = new URL(href, window.location.href);
-    if (url.origin !== window.location.origin) return;
-    if (url.pathname === window.location.pathname) return;
-
-    event.preventDefault();
-    document.body.classList.add('is-leaving');
-
-    if (reduced) {
-      window.location.href = url.href;
-      return;
-    }
-
-    gsap.to(veil, {
-      opacity: 1,
-      duration: 0.3,
-      ease: 'power2.inOut',
-      onComplete: () => {
-        window.location.href = url.href;
-      },
+function initMarquee() {
+  document.querySelectorAll('[data-marquee]').forEach((track) => {
+    // The CSS loop translates by -50%, so the tile set must appear exactly twice.
+    const clone = track.cloneNode(true);
+    [...clone.children].forEach((child) => {
+      child.setAttribute('aria-hidden', 'true');
+      child.setAttribute('tabindex', '-1');
+      track.appendChild(child);
     });
   });
-
-  // Restoring from the back/forward cache would otherwise leave the veil up.
-  window.addEventListener('pageshow', (event) => {
-    if (event.persisted) {
-      document.body.classList.remove('is-leaving');
-      gsap.set(veil, { opacity: 0 });
-    }
-  });
 }
 
-/* -------------------------------------------------------------------------- */
-/* Accordion (Reference Build document groups)                                */
-/* -------------------------------------------------------------------------- */
+/* ------------------------------------------------------------- accordions */
 
-export function initAccordion() {
-  const groups = document.querySelectorAll('.accordion__group');
-  if (!groups.length) return;
+function initAccordions({ reducedMotion }) {
+  document.querySelectorAll('[data-acc]').forEach((acc, index) => {
+    const head = acc.querySelector('.acc__head');
+    const panel = acc.querySelector('.acc__panel');
+    const inner = acc.querySelector('.acc__inner');
+    if (!head || !panel || !inner) return;
 
-  const reduced = prefersReducedMotion();
-
-  groups.forEach((group) => {
-    const head = group.querySelector('.accordion__head');
-    const body = group.querySelector('.accordion__body');
-    if (!head || !body) return;
-
-    const startOpen = head.getAttribute('aria-expanded') === 'true';
-    gsap.set(body, { height: startOpen ? 'auto' : 0 });
+    const open = index === 0;
+    acc.classList.toggle('is-open', open);
+    head.setAttribute('aria-expanded', String(open));
+    panel.style.height = open ? 'auto' : '0px';
 
     head.addEventListener('click', () => {
-      const isOpen = head.getAttribute('aria-expanded') === 'true';
+      const isOpen = acc.classList.contains('is-open');
+      acc.classList.toggle('is-open', !isOpen);
       head.setAttribute('aria-expanded', String(!isOpen));
 
-      if (reduced) {
-        gsap.set(body, { height: isOpen ? 0 : 'auto' });
+      if (reducedMotion) {
+        panel.style.height = isOpen ? '0px' : 'auto';
         return;
       }
 
-      gsap.to(body, {
-        height: isOpen ? 0 : 'auto',
-        duration: 0.3,
-        ease: 'power2.inOut',
-        onComplete: () => getLenis()?.resize(),
-      });
-    });
-  });
-}
-
-/* -------------------------------------------------------------------------- */
-/* Templates filter                                                           */
-/* -------------------------------------------------------------------------- */
-
-export function initFilters() {
-  const buttons = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.template-card');
-  if (!buttons.length || !cards.length) return;
-
-  const reduced = prefersReducedMotion();
-
-  const apply = (filter) => {
-    cards.forEach((card) => {
-      const matches = filter === 'all' || card.dataset.framework === filter;
-      const wasHidden = card.classList.contains('is-hidden');
-
-      if (matches && wasHidden) {
-        card.classList.remove('is-hidden');
-        if (!reduced) {
-          gsap.fromTo(
-            card,
-            { opacity: 0, scale: 0.94 },
-            { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' }
-          );
-        }
-      } else if (!matches && !wasHidden) {
-        if (reduced) {
-          card.classList.add('is-hidden');
-        } else {
-          gsap.to(card, {
-            opacity: 0,
-            scale: 0.94,
-            duration: 0.2,
-            ease: 'power2.in',
-            onComplete: () => card.classList.add('is-hidden'),
-          });
-        }
+      gsap.killTweensOf(panel);
+      if (isOpen) {
+        gsap.fromTo(
+          panel,
+          { height: inner.offsetHeight },
+          { height: 0, duration: 0.35, ease: 'power2.out', onComplete: () => ScrollTrigger.refresh() }
+        );
+      } else {
+        gsap.fromTo(
+          panel,
+          { height: 0 },
+          {
+            height: inner.offsetHeight,
+            duration: 0.35,
+            ease: 'power2.out',
+            onComplete: () => {
+              panel.style.height = 'auto';
+              ScrollTrigger.refresh();
+            },
+          }
+        );
       }
     });
-  };
+  });
+}
 
-  buttons.forEach((button) => {
-    button.addEventListener('click', () => {
-      buttons.forEach((b) => b.classList.toggle('is-active', b === button));
-      apply(button.dataset.filter);
+/* ------------------------------------------------------------ template filters */
+
+function initFilters({ reducedMotion }) {
+  const bar = document.querySelector('[data-filters]');
+  const grid = document.querySelector('[data-tpl-grid]');
+  if (!bar || !grid) return;
+
+  const cards = [...grid.querySelectorAll('[data-framework]')];
+
+  bar.addEventListener('click', (e) => {
+    const btn = e.target instanceof Element ? e.target.closest('.filter') : null;
+    if (!btn) return;
+
+    bar.querySelectorAll('.filter').forEach((f) => {
+      const active = f === btn;
+      f.classList.toggle('is-active', active);
+      f.setAttribute('aria-pressed', String(active));
+    });
+
+    const want = btn.dataset.filter;
+
+    cards.forEach((card) => {
+      const match = want === 'all' || card.dataset.framework === want;
+
+      if (reducedMotion) {
+        card.classList.toggle('is-hidden', !match);
+        return;
+      }
+
+      if (match) {
+        card.classList.remove('is-hidden');
+        gsap.fromTo(
+          card,
+          { opacity: 0, scale: 0.96 },
+          { opacity: 1, scale: 1, duration: 0.25, ease: 'power2.out', overwrite: true }
+        );
+      } else {
+        gsap.to(card, {
+          opacity: 0,
+          scale: 0.96,
+          duration: 0.25,
+          ease: 'power2.out',
+          overwrite: true,
+          onComplete: () => card.classList.add('is-hidden'),
+        });
+      }
+    });
+
+    gsap.delayedCall(0.3, () => ScrollTrigger.refresh());
+  });
+}
+
+/* ------------------------------------------------------------- counters */
+
+function initCounters({ reducedMotion }) {
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const target = Number(el.dataset.count);
+    const suffix = el.dataset.countSuffix || '';
+
+    if (reducedMotion) {
+      el.textContent = `${target}${suffix}`;
+      return;
+    }
+
+    el.textContent = `0${suffix}`;
+    const obj = { v: 0 };
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      once: true,
+      onEnter: () => {
+        gsap.to(obj, {
+          v: target,
+          duration: 1.2,
+          ease: 'power2.out',
+          onUpdate: () => {
+            el.textContent = `${Math.round(obj.v)}${suffix}`;
+          },
+        });
+      },
     });
   });
 }
 
-/* -------------------------------------------------------------------------- */
-/* Non-functional forms                                                       */
-/* -------------------------------------------------------------------------- */
+/* ------------------------------------------------------- page transitions */
 
-/** The template-bundle form is a visual placeholder; stop it from navigating. */
-export function initInertForms() {
-  document.querySelectorAll('form[data-inert]').forEach((form) => {
-    form.addEventListener('submit', (event) => event.preventDefault());
+function initPageTransitions({ reducedMotion }) {
+  requestAnimationFrame(() => document.body.classList.add('is-ready'));
+
+  if (reducedMotion) return;
+
+  document.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    const link = e.target instanceof Element ? e.target.closest('a') : null;
+    if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+
+    let url;
+    try {
+      url = new URL(link.href, window.location.href);
+    } catch {
+      return;
+    }
+
+    // Off site, mailto and tel all have a different origin. In page anchors and
+    // the inert "#" links resolve to the page we are already on.
+    if (url.origin !== window.location.origin) return;
+    if (normalisePath(url.pathname) === normalisePath(window.location.pathname)) return;
+
+    e.preventDefault();
+    document.body.classList.add('is-leaving');
+    window.setTimeout(() => {
+      window.location.href = url.href;
+    }, 300);
   });
 }

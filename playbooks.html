@@ -1,217 +1,219 @@
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="The step-by-step methodologies behind every ISO 27001 and ISO 42001 implementation, including the 90-day certification roadmap."
-    />
-    <meta name="theme-color" content="#0A0A0B" />
-    <title>Playbooks | Shubham Raut</title>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      document.documentElement.classList.remove('no-js');
-    </script>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>Playbooks, Shubham Raut, AI Governance and ISO Implementation</title>
+  <meta name="description" content="Step by step methodologies behind every implementation. How an ISO 27001 build runs in 90 days, and how an ISO 42001 AI governance build runs in 8 weeks." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Playbooks, Shubham Raut, AI Governance and ISO Implementation" />
+  <meta property="og:description" content="The exact methodologies behind every implementation." />
+  <meta property="og:image" content="https://shubhamraut.com/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Shubham Raut" />
+  <meta property="og:url" content="https://shubhamraut.com/playbooks" />
+  <link rel="canonical" href="https://shubhamraut.com/playbooks" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://shubhamraut.com/og.png" />
+  <noscript>
+    <style>
+      body { opacity: 1 !important; }
+      .loader { display: none !important; }
+      .reveal { opacity: 1 !important; }
+      .acc__panel { height: auto !important; }
+      .scene-canvas { display: none !important; }
+    </style>
+  </noscript>
+  <script type="module" src="/src/js/main.js"></script>
+</head>
 
-  <body data-page="playbooks">
-    <div class="page-veil" aria-hidden="true"></div>
-    <div class="noise" aria-hidden="true"></div>
-    <div class="cursor" aria-hidden="true"></div>
+<body>
 
-    <header class="site-header">
-      <div class="header__inner">
-        <a class="brand" href="index.html">Shubham Raut</a>
-        <nav class="nav-desktop" aria-label="Primary">
-          <a href="reference-build.html">Projects</a>
-          <a href="templates.html">Templates</a>
-          <a href="playbooks.html" aria-current="page">Playbooks</a>
-          <a href="wizard.html">Wizard</a>
-          <a href="about.html">About</a>
-        </nav>
-        <div class="header__actions">
-          <a class="btn btn--primary btn--sm" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
-          <button
-            class="menu-toggle"
-            type="button"
-            aria-label="Open menu"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-          >
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <button class="mobile-menu__close" type="button" aria-label="Close menu">&times;</button>
-      <nav aria-label="Mobile">
-        <a href="index.html">Home</a>
-        <a href="reference-build.html">Projects</a>
-        <a href="templates.html">Templates</a>
-        <a href="playbooks.html" aria-current="page">Playbooks</a>
-        <a href="wizard.html">Wizard</a>
-        <a href="about.html">About</a>
+  <header class="header">
+    <div class="header__inner">
+      <a class="brand" href="/">Shubham Raut</a>
+      <nav class="nav" data-nav aria-label="Primary">
+        <a class="nav-link" href="/proof-of-work">Proof of Work</a>
+        <a class="nav-link" href="/templates">Templates</a>
+        <a class="nav-link" href="/playbooks">Playbooks</a>
+        <a class="nav-link" href="/wizard">Wizard</a>
+        <a class="nav-link" href="/about">About</a>
       </nav>
-      <a class="btn btn--primary" href="mailto:shubhamraut9822@gmail.com">Book a call</a>
+      <a class="btn btn--coral header__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+      <button class="burger" data-burger type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
+  </header>
 
-    <div class="depth-stage" aria-hidden="true">
-      <div class="depth-track ghost-layer" data-speed="0.3">
-        <span class="ghost-word" data-align="right" style="--ghost-size: 18vw; top: 15vh"
-          >PLAYBOOK</span
-        >
-      </div>
-      <div class="depth-track blob-layer" data-speed="0.6">
-        <div class="blob blob--coral" style="top: 8vh; left: -6vw"></div>
-        <div class="blob blob--blue" style="top: 115vh; right: -6vw"></div>
-      </div>
-    </div>
+  <div class="menu" id="mobile-menu" data-menu>
+    <button class="menu__close" data-menu-close type="button" aria-label="Close menu"></button>
+    <a class="menu__link" href="/proof-of-work">Proof of Work</a>
+    <a class="menu__link" href="/templates">Templates</a>
+    <a class="menu__link" href="/playbooks">Playbooks</a>
+    <a class="menu__link" href="/wizard">Wizard</a>
+    <a class="menu__link" href="/about">About</a>
+    <a class="btn btn--coral menu__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+  </div>
 
-    <main>
-      <section class="page-header">
-        <div class="container">
-          <span class="eyebrow" data-reveal>Playbooks</span>
-          <h1 class="h-display" data-reveal>How I actually run these.</h1>
-          <p class="body-text" data-reveal>
-            Step-by-step methodologies behind every implementation. Not theory, but the exact system I
-            follow.
-          </p>
+  <main>
+
+    <section class="page-head">
+      <div class="blob blob--coral" style="top: -60px; right: -130px;"></div>
+      <div class="blob blob--blue" style="top: 400px; left: -170px;"></div>
+      <div class="ghost" aria-hidden="true" style="top: 18%;">मार्ग</div>
+      <div class="glyph glyph--compass" data-glyph="compass" style="top: 24%; right: 6vw;"></div>
+
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+          <p class="eyebrow reveal"><span class="eyebrow__en">Playbooks</span></p>
+          <h1 class="display reveal">How I actually run these.</h1>
+          <p class="body reveal">Step by step methodologies behind every implementation. Not theory, the exact system I follow.</p>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="section" style="padding-top: 0">
-        <div class="container">
-          <div style="display: flex; flex-direction: column; gap: 24px" data-reveal-group="up">
-            <article class="playbook-card">
-              <h3>How I run an ISO 27001 implementation in 90 days</h3>
-              <p>
-                From kickoff to certification audit in 12 weeks. Covers gap assessment, risk
-                methodology, documentation sprint, control implementation, internal audit, and
-                management review, with exact deliverables at each stage.
-              </p>
-              <a class="link-coral" href="#">Read the playbook →</a>
-              <span class="playbook-card__meta">12 weeks</span>
+    <section class="section" style="padding-top: 0;" aria-label="Playbooks">
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+          <div class="playbook-list" data-reveal-group>
+
+            <article class="playbook reveal">
+              <h2 class="h3">How I run an ISO 27001 implementation in 90 days</h2>
+              <p>From kickoff to certification audit in 12 weeks. Covers gap assessment, risk methodology, documentation sprint, control implementation, internal audit, and management review, with exact deliverables at each stage.</p>
+              <div class="playbook__foot">
+                <a class="link-coral" href="#">Read the playbook</a>
+                <span class="playbook__dur">12 weeks</span>
+              </div>
             </article>
 
-            <article class="playbook-card">
-              <h3>How I run an ISO 42001 (AI governance) implementation</h3>
-              <p>
-                Standing up an AI management system from scratch. Covers AI inventory, impact
-                assessment, AI risk methodology, policy development, and integration with existing
-                ISO 27001 controls.
-              </p>
-              <a class="link-coral" href="#">Read the playbook →</a>
-              <span class="playbook-card__meta">8 weeks</span>
+            <article class="playbook reveal">
+              <h2 class="h3">How I run an ISO 42001 AI governance implementation</h2>
+              <p>Standing up an AI management system from scratch. Covers AI inventory, impact assessment, AI risk methodology, policy development, and integration with existing ISO 27001 controls.</p>
+              <div class="playbook__foot">
+                <a class="link-coral" href="#">Read the playbook</a>
+                <span class="playbook__dur">8 weeks</span>
+              </div>
             </article>
+
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- =========================== TIMELINE =========================== -->
-      <section class="section section--alt">
-        <div class="container">
-          <span class="eyebrow" data-reveal>The 90-Day Roadmap</span>
-          <h2 class="h-sub" data-reveal>Twelve weeks, six phases.</h2>
+    <section class="section section--alt" aria-labelledby="timeline-h">
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+          <h2 class="h2 reveal" id="timeline-h">The 12 week shape</h2>
 
-          <div class="timeline">
+          <div class="timeline" data-timeline>
             <div class="timeline__track" aria-hidden="true"></div>
-            <div class="timeline__phases" data-reveal-group="up">
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 1–2</div>
-                <div class="phase__title">Gap Assessment &amp; Scoping</div>
-                <p class="phase__desc">Current state, ISMS scope, interested parties.</p>
-              </div>
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 3–4</div>
-                <div class="phase__title">Risk Assessment</div>
-                <p class="phase__desc">
-                  Risk methodology, identify and score risks, select treatments.
-                </p>
-              </div>
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 5–8</div>
-                <div class="phase__title">Documentation Sprint</div>
-                <p class="phase__desc">
-                  Policies, procedures, SoA, and supporting documents.
-                </p>
-              </div>
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 9–10</div>
-                <div class="phase__title">Control Implementation</div>
-                <p class="phase__desc">Implement and evidence Annex A controls.</p>
-              </div>
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 11</div>
-                <div class="phase__title">Internal Audit</div>
-                <p class="phase__desc">Conduct audit, log findings, corrective actions.</p>
-              </div>
-              <div class="phase">
-                <span class="phase__dot" aria-hidden="true"></span>
-                <div class="phase__weeks">WK 12</div>
-                <div class="phase__title">Management Review &amp; Audit Prep</div>
-                <p class="phase__desc">
-                  Management review, finalise evidence, brief for Stage 1.
-                </p>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 1-2</div>
+                <h3 class="phase__title">Gap Assessment and Scoping</h3>
+                <p class="phase__note">Current state, ISMS scope, interested parties.</p>
               </div>
             </div>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 3-4</div>
+                <h3 class="phase__title">Risk Assessment</h3>
+                <p class="phase__note">Risk methodology, identify and score risks, select treatments.</p>
+              </div>
+            </div>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 5-8</div>
+                <h3 class="phase__title">Documentation Sprint</h3>
+                <p class="phase__note">Policies, procedures, SoA, and supporting documents.</p>
+              </div>
+            </div>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 9-10</div>
+                <h3 class="phase__title">Control Implementation</h3>
+                <p class="phase__note">Implement and evidence Annex A controls.</p>
+              </div>
+            </div>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 11</div>
+                <h3 class="phase__title">Internal Audit</h3>
+                <p class="phase__note">Conduct audit, log findings, raise corrective actions.</p>
+              </div>
+            </div>
+
+            <div class="phase">
+              <span class="phase__dot" aria-hidden="true"></span>
+              <div class="phase__body">
+                <div class="phase__wk">WK 12</div>
+                <h3 class="phase__title">Management Review and Audit Prep</h3>
+                <p class="phase__note">Management review, finalise evidence, brief for Stage 1.</p>
+              </div>
+            </div>
+
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="section cta">
-        <h2 class="h-sub" data-reveal style="max-width: 760px; margin: 0 auto 32px">
-          These playbooks are the backbone of every engagement. Want to see one applied end-to-end?
-        </h2>
-        <div class="btn-row" data-reveal style="justify-content: center">
-          <a class="btn btn--primary" href="reference-build.html">See the Projects →</a>
+    <section class="section section--center" aria-labelledby="pb-close-h">
+      <div class="wrap wrap--narrow">
+        <div class="section__inner">
+          <h2 class="h2 reveal" id="pb-close-h" style="max-width: 22ch; margin-inline: auto;">These playbooks are the backbone of every engagement. Want to see one applied end to end?</h2>
+          <div class="btn-row reveal" style="justify-content: center;">
+            <a class="btn btn--coral" href="/proof-of-work"><span class="btn__label">See the Proof of Work</span></a>
+          </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
 
-    <footer class="site-footer">
-      <div class="site-footer__ghost" aria-hidden="true">SR</div>
-      <div class="footer__inner">
+  </main>
+
+  <footer class="footer">
+    <div class="footer__ghost" aria-hidden="true">सुरक्षा</div>
+    <div class="wrap">
+      <div class="footer__grid">
         <div>
-          <div class="footer__brand">Shubham Raut</div>
-          <p class="footer__tagline">AI Governance &amp; ISO Implementation</p>
+          <div class="footer__name">Shubham Raut</div>
+          <div class="footer__role">AI Governance and ISO Implementation</div>
         </div>
         <div>
-          <div class="footer__heading">Pages</div>
-          <div class="footer__links">
-            <a href="reference-build.html">Projects</a>
-            <a href="templates.html">Templates</a>
-            <a href="playbooks.html">Playbooks</a>
-            <a href="wizard.html">Wizard</a>
-            <a href="about.html">About</a>
+          <div class="footer__head">Pages</div>
+          <div class="footer__list">
+            <a href="/proof-of-work">Proof of Work</a>
+            <a href="/templates">Templates</a>
+            <a href="/playbooks">Playbooks</a>
+            <a href="/wizard">Wizard</a>
+            <a href="/about">About</a>
           </div>
         </div>
         <div>
-          <div class="footer__heading">Connect</div>
-          <div class="footer__links">
-            <a href="https://www.linkedin.com/in/shura-ssr" target="_blank" rel="noopener noreferrer"
-              >LinkedIn ↗</a
-            >
-            <a href="mailto:shubhamraut9822@gmail.com">Email ↗</a>
+          <div class="footer__head">Connect</div>
+          <div class="footer__list">
+            <a class="arrow-link" href="https://www.linkedin.com/in/shubhamraut" target="_blank" rel="noopener noreferrer">LinkedIn <span class="arrow" aria-hidden="true">↗</span></a>
+            <a class="arrow-link" href="mailto:shubhamraut9822@gmail.com">Email <span class="arrow" aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
       <div class="footer__bottom">© 2026 Shubham Raut. Built and maintained by one person.</div>
-    </footer>
+    </div>
+  </footer>
 
-    <script type="module" src="/src/js/main.js"></script>
-  </body>
+  <div class="grain" aria-hidden="true"></div>
+
+</body>
 </html>
