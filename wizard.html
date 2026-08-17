@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
   <title>Scoping Wizard, Shubham Raut, AI Governance and ISO Implementation</title>
   <meta name="description" content="An AI compliance scoping wizard. Find out which standards apply to you, which documents you need, and how long implementation will take." />
   <meta property="og:type" content="website" />
@@ -41,10 +42,13 @@
         <a class="nav-link" href="/wizard">Wizard</a>
         <a class="nav-link" href="/about">About</a>
       </nav>
-      <a class="btn btn--coral header__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
-      <button class="burger" data-burger type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="header__right">
+        <button class="sound-toggle" data-sound-toggle type="button" aria-pressed="false" aria-label="Turn interaction sounds on"></button>
+        <a class="btn btn--coral header__cta" href="mailto:shubhamraut9822@gmail.com"><span class="btn__label">Book a call</span></a>
+        <button class="burger" data-burger type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -60,15 +64,15 @@
 
   <main>
 
+    <div class="thread thread--page" data-thread aria-hidden="true"></div>
     <section class="page-head">
       <div class="blob blob--coral" style="top: -50px; left: -150px;"></div>
       <div class="blob blob--blue" style="top: 380px; right: -150px;"></div>
       <div class="ghost" aria-hidden="true" style="top: 16%;">मार्ग</div>
-      <div class="glyph glyph--compass" data-glyph="compass" style="top: 26%; right: 6vw;"></div>
 
       <div class="wrap wrap--narrow">
         <div class="section__inner">
-          <p class="eyebrow reveal"><span class="eyebrow__en">Scoping Wizard</span></p>
+          <p class="eyebrow reveal"><span class="eyebrow__en">Scoping Wizard</span> <span class="eyebrow__sa">PATH &middot; मार्ग</span></p>
           <h1 class="display reveal">AI Compliance Scoping Wizard</h1>
           <p class="body reveal">Answer a few questions about your company, AI usage, and target markets. Get an instant scoping report with applicable standards, required documents, and a timeline estimate.</p>
         </div>
@@ -119,6 +123,7 @@
         <div>
           <div class="footer__name">Shubham Raut</div>
           <div class="footer__role">AI Governance and ISO Implementation</div>
+          <div class="footer__sa">SECURITY &middot; सुरक्षा</div>
         </div>
         <div>
           <div class="footer__head">Pages</div>

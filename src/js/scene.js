@@ -1,29 +1,46 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
+import { playRingLock } from './sound.js';
 
 const DEG = Math.PI / 180;
 
 /**
  * The Governed Core.
- * One sphere, six framework rings that lock into orbit on scroll, embers and
+ * One sphere, five framework rings that lock into orbit on scroll, embers and
  * haze that thin out as the structure completes.
+ *
+ * Each ring is dark brushed metal with a real specular response, carries a
+ * billboarded name plaque that stays legible at any rotation, and is swept by
+ * a travelling light that catches the metal once every few seconds.
  */
 export const RINGS = [
-  { code: 'ISO/IEC 27001:2022', radius: 1.9,  rx: 78,  rz: 10,  speed: 0.0016, dir: 1 },
-  { code: 'ISO/IEC 42001:2023', radius: 2.35, rx: 20,  rz: 65,  speed: 0.0011, dir: -1 },
-  { code: 'EU AI ACT',          radius: 2.8,  rx: 55,  rz: 130, speed: 0.0019, dir: 1 },
-  { code: 'SOC 2',              radius: 3.2,  rx: 100, rz: 40,  speed: 0.0008, dir: 1 },
-  { code: 'GDPR',               radius: 3.6,  rx: 35,  rz: 155, speed: 0.0014, dir: -1 },
-  { code: 'DPDPA',              radius: 4.0,  rx: 68,  rz: 95,  speed: 0.0010, dir: 1 },
+  { code: 'ISO 27001', radius: 1.9,  rx: 78,  rz: 10,  speed: 0.0016, dir: 1,  sweep: 6.2, offset: 0.0 },
+  { code: 'ISO 42001', radius: 2.35, rx: 20,  rz: 65,  speed: 0.0011, dir: -1, sweep: 7.4, offset: 1.3 },
+  { code: 'EU AI ACT', radius: 2.8,  rx: 55,  rz: 130, speed: 0.0019, dir: 1,  sweep: 6.8, offset: 2.6 },
+  { code: 'SOC 2',     radius: 3.2,  rx: 100, rz: 40,  speed: 0.0008, dir: 1,  sweep: 8.0, offset: 3.9 },
+  { code: 'GDPR',      radius: 3.6,  rx: 35,  rz: 155, speed: 0.0014, dir: -1, sweep: 7.0, offset: 5.2 },
 ];
 
+const OUTER_RADIUS = 3.6;
 const FOG_MAX = 0.075;
 const FOG_MIN = 0.012;
 const EMBER_COUNT = 180;
-const RING_BASE_OPACITY = 0.42;
 
-const COLOR_RING = new THREE.Color('#F7F5F1');
+// The core reads as a slow heartbeat, so the swing has to be wide. The peak is
+// held just under 0.9 because above that the emissive saturates and the facets
+// and specular highlight wash out, which flattens the very pulse it is meant
+// to sell.
+const EMISSIVE_LOW = 0.3;
+const EMISSIVE_HIGH = 0.75;
+const SHELL_LOW = 1.1;
+const SHELL_HIGH = 1.16;
+
+const CORAL_LIGHT_BASE = 7;
+const SWEEP_LIGHT_BASE = 5;
+
+const COLOR_OFF_WHITE = new THREE.Color('#F7F5F1');
 const COLOR_CORAL = new THREE.Color('#FF5436');
+const COLOR_METAL = new THREE.Color('#1a1a1f');
 
 const emberVert = /* glsl */ `
   attribute float aSize;
@@ -71,28 +88,52 @@ const emberFrag = /* glsl */ `
   }
 `;
 
-function makeLabelTexture(code, repeats) {
-  const w = 2048;
-  const h = 64;
+/** Rounded, glass like plaque carrying the framework name. */
+function makePlaqueTexture(code) {
+  const h = 160;
+  const w = Math.round(96 * code.length + 150);
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d');
+
+  const r = 34;
+  const pad = 6;
   ctx.clearRect(0, 0, w, h);
-  ctx.font = '500 24px "JetBrains Mono", ui-monospace, monospace';
+
+  ctx.beginPath();
+  ctx.moveTo(pad + r, pad);
+  ctx.lineTo(w - pad - r, pad);
+  ctx.quadraticCurveTo(w - pad, pad, w - pad, pad + r);
+  ctx.lineTo(w - pad, h - pad - r);
+  ctx.quadraticCurveTo(w - pad, h - pad, w - pad - r, h - pad);
+  ctx.lineTo(pad + r, h - pad);
+  ctx.quadraticCurveTo(pad, h - pad, pad, h - pad - r);
+  ctx.lineTo(pad, pad + r);
+  ctx.quadraticCurveTo(pad, pad, pad + r, pad);
+  ctx.closePath();
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, 'rgba(30, 30, 36, 0.82)');
+  grad.addColorStop(1, 'rgba(12, 12, 15, 0.88)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(255, 84, 54, 0.5)';
+  ctx.stroke();
+
+  ctx.font = '500 62px "JetBrains Mono", ui-monospace, monospace';
   ctx.fillStyle = '#F7F5F1';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-
-  const slot = w / repeats;
-  for (let i = 0; i < repeats; i += 1) {
-    ctx.fillText(code, (i + 0.5) * slot, h / 2 + 1);
-  }
+  ctx.fillText(code, w / 2, h / 2 + 3);
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
   tex.needsUpdate = true;
-  return tex;
+  return { tex, aspect: w / h };
 }
 
 export function createScene({ canvas }) {
@@ -113,17 +154,13 @@ export function createScene({ canvas }) {
   const core = new THREE.Group();
   scene.add(core);
 
-  // Low emissive on purpose: the core is a dark body lit from within, not a
-  // glowing red planet. Most of its colour comes from the coral point light.
-  const EMISSIVE_BASE = 0.045;
-
   const sphereGeo = new THREE.IcosahedronGeometry(1.05, 4);
   const sphereMat = new THREE.MeshStandardMaterial({
     color: 0x141419,
     roughness: 0.42,
     metalness: 0.25,
     emissive: COLOR_CORAL.clone(),
-    emissiveIntensity: EMISSIVE_BASE,
+    emissiveIntensity: EMISSIVE_LOW,
     flatShading: true,
   });
   const sphere = new THREE.Mesh(sphereGeo, sphereMat);
@@ -138,44 +175,95 @@ export function createScene({ canvas }) {
     depthWrite: false,
   });
   const shell = new THREE.Mesh(shellGeo, shellMat);
-  shell.scale.setScalar(1.12);
+  shell.scale.setScalar(SHELL_LOW);
   core.add(shell);
 
   // --------------------------------------------------------------- rings ---
   const ringGroup = new THREE.Group();
   core.add(ringGroup);
 
+  const tmpVec = new THREE.Vector3();
+
   const rings = RINGS.map((def) => {
-    const geo = new THREE.TorusGeometry(def.radius, 0.006, 12, 200);
-    const mat = new THREE.MeshBasicMaterial({
-      color: COLOR_RING.clone(),
+    // Thicker than a hairline on purpose: brushed metal needs some surface for
+    // the specular highlight and the light sweep to actually land on.
+    const geo = new THREE.TorusGeometry(def.radius, 0.016, 14, 220);
+    const mat = new THREE.MeshStandardMaterial({
+      color: COLOR_METAL.clone(),
+      metalness: 0.65,
+      roughness: 0.22,
+      emissive: COLOR_OFF_WHITE.clone(),
+      emissiveIntensity: 0.05,
       transparent: true,
       opacity: 0,
-      depthWrite: false,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.rotation.set(def.rx * DEG, 0, def.rz * DEG);
     mesh.scale.setScalar(1.6);
     mesh.visible = false;
+    ringGroup.add(mesh);
 
-    // Etched calibration marks around the circumference.
-    const repeats = Math.max(10, Math.round(def.radius * 7));
-    const tex = makeLabelTexture(def.code, repeats);
-    const labelGeo = new THREE.TorusGeometry(def.radius, 0.052, 4, 240);
-    const labelMat = new THREE.MeshBasicMaterial({
+    // The fixed orbital plane, used to place the plaque and the sweep. The
+    // ring mesh itself keeps spinning inside this plane.
+    const tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler(def.rx * DEG, 0, def.rz * DEG));
+
+    const { tex, aspect } = makePlaqueTexture(def.code);
+    const plaqueH = 0.3;
+    const plaqueGeo = new THREE.PlaneGeometry(plaqueH * aspect, plaqueH);
+    const plaqueMat = new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
       opacity: 0,
       depthWrite: false,
       side: THREE.DoubleSide,
-      color: COLOR_RING.clone(),
+      toneMapped: false,
     });
-    const label = new THREE.Mesh(labelGeo, labelMat);
-    mesh.add(label);
+    const plaque = new THREE.Mesh(plaqueGeo, plaqueMat);
+    plaque.visible = false;
+    ringGroup.add(plaque);
 
-    ringGroup.add(mesh);
-    return { def, mesh, mat, label, labelMat, tex, geo, labelGeo, revealed: false, spin: 0 };
+    // Travelling glint: a visible spark plus the light that makes the metal
+    // flare as it passes.
+    const glintGeo = new THREE.SphereGeometry(0.032, 10, 10);
+    const glintMat = new THREE.MeshBasicMaterial({
+      color: 0xfff1ec,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const glint = new THREE.Mesh(glintGeo, glintMat);
+    glint.visible = false;
+    ringGroup.add(glint);
+
+    const sweepLight = new THREE.PointLight(0xffd9cc, 0, 1.5, 2);
+    ringGroup.add(sweepLight);
+
+    return {
+      def,
+      mesh,
+      mat,
+      geo,
+      tilt,
+      plaque,
+      plaqueMat,
+      plaqueGeo,
+      tex,
+      glint,
+      glintMat,
+      glintGeo,
+      sweepLight,
+      spin: 0,
+      revealed: false,
+    };
   });
+
+  /** Point on a ring's orbit, expressed in ringGroup space. */
+  function orbitPoint(ring, angle, out) {
+    out.set(Math.cos(angle) * ring.def.radius, Math.sin(angle) * ring.def.radius, 0);
+    out.applyQuaternion(ring.tilt);
+    return out;
+  }
 
   // -------------------------------------------------------------- embers ---
   const emberGeo = new THREE.BufferGeometry();
@@ -192,10 +280,8 @@ export function createScene({ canvas }) {
   const EMBER_R = 7;
 
   for (let i = 0; i < EMBER_COUNT; i += 1) {
-    const u = Math.random();
-    const v = Math.random();
-    const theta = u * Math.PI * 2;
-    const phi = Math.acos(2 * v - 1);
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
     const r = EMBER_R * Math.cbrt(Math.random());
 
     const x = r * Math.sin(phi) * Math.cos(theta);
@@ -207,13 +293,12 @@ export function createScene({ canvas }) {
     base[i * 3 + 2] = positions[i * 3 + 2] = z;
 
     // Incense smoke in still air: mostly up, a little sideways, never fast.
-    drift[i * 3] = (Math.random() - 0.5) * 0.10;
-    drift[i * 3 + 1] = 0.10 + Math.random() * 0.18;
-    drift[i * 3 + 2] = (Math.random() - 0.5) * 0.10;
+    drift[i * 3] = (Math.random() - 0.5) * 0.1;
+    drift[i * 3 + 1] = 0.1 + Math.random() * 0.18;
+    drift[i * 3 + 2] = (Math.random() - 0.5) * 0.1;
     phase[i] = Math.random() * Math.PI * 2;
 
-    const warm = Math.random() < 0.3;
-    const c = warm ? COLOR_CORAL : COLOR_RING;
+    const c = Math.random() < 0.3 ? COLOR_CORAL : COLOR_OFF_WHITE;
     colors[i * 3] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
@@ -247,7 +332,7 @@ export function createScene({ canvas }) {
   const embers = new THREE.Points(emberGeo, emberMat);
   scene.add(embers);
 
-  // ------------------------------------------------------------ shockwave ---
+  // ----------------------------------------------------------- shockwave ---
   const shockGeo = new THREE.RingGeometry(0.86, 1, 96);
   const shockMat = new THREE.MeshBasicMaterial({
     color: COLOR_CORAL.clone(),
@@ -264,9 +349,6 @@ export function createScene({ canvas }) {
   const ambient = new THREE.AmbientLight(0xfff4ec, 0.16);
   const key = new THREE.DirectionalLight(0xffffff, 0.9);
   key.position.set(5, 7, 4);
-  // Point lights are in candela since three r155, so the nominal 0.9 becomes
-  // this once divided by the squared distance to the core.
-  const CORAL_LIGHT_BASE = 7;
   const coralLight = new THREE.PointLight(0xff5436, CORAL_LIGHT_BASE, 14);
   coralLight.position.set(1.2, 0.6, 2.2);
   const rim = new THREE.DirectionalLight(0x4a7fd9, 0.45);
@@ -274,23 +356,10 @@ export function createScene({ canvas }) {
   scene.add(ambient, key, coralLight, rim);
 
   // ----------------------------------------------------------------- state ---
-  const cam = {
-    radius: 24,
-    azimuth: -0.30,
-    height: 0.4,
-    shift: 2.6,
-    restRadius: 11,
-  };
-
+  const cam = { radius: 26, azimuth: -0.3, height: 0.4, shift: 2.6, restRadius: 12 };
   const pointer = { x: 0, y: 0, tx: 0, ty: 0, active: false };
   const tiltMax = 1.8 * DEG;
-
-  const state = {
-    scroll: 0,
-    finale: 0,
-    emberBright: 1,
-    coralBase: CORAL_LIGHT_BASE,
-  };
+  const state = { scroll: 0, finale: 0, coralBase: CORAL_LIGHT_BASE };
 
   const ray = new THREE.Raycaster();
   const pushPoint = new THREE.Vector3();
@@ -298,23 +367,74 @@ export function createScene({ canvas }) {
 
   let clock = 0;
 
+  /**
+   * Framing is solved rather than hard coded. The copy column is measured from
+   * the DOM, then the assembly is sized and offset so it always clears that
+   * column by a real gap. Text is never touched to make room.
+   */
   function layout() {
     const w = window.innerWidth;
     const h = window.innerHeight;
     const aspect = w / h;
-
-    const tablet = w < 1024;
-    cam.shift = tablet ? 0 : 2.6;
-    ringGroup.scale.setScalar(tablet ? 0.8 : 1);
-
-    const outer = 4.0 * (tablet ? 0.8 : 1);
     const halfFov = Math.tan((45 * DEG) / 2);
-    const needW = (outer + cam.shift + 0.6) / (halfFov * aspect);
-    const needH = (outer + 0.5) / halfFov;
-    cam.restRadius = THREE.MathUtils.clamp(Math.max(needW, needH), 9, 22);
+
+    let ringScale = 1;
+    let gapPx = 80;
+
+    if (w < 1024) {
+      ringScale = 0.8;
+      gapPx = 0;
+    } else if (w < 1280) {
+      gapPx = 56;
+    } else if (w < 1680) {
+      gapPx = 80;
+    } else {
+      // Ample room on a large monitor, so the instrument can breathe wider.
+      ringScale = 1.1;
+      gapPx = 120;
+    }
+
+    ringGroup.scale.setScalar(ringScale);
+    const outer = OUTER_RADIUS * ringScale;
+
+    if (w < 1024) {
+      // Centred composition, no copy column to clear.
+      cam.shift = 0;
+      const needW = (outer + 0.6) / (halfFov * aspect);
+      const needH = (outer + 0.5) / halfFov;
+      cam.restRadius = THREE.MathUtils.clamp(Math.max(needW, needH), 9, 24);
+    } else {
+      const col = document.querySelector('.hero .home-col');
+      const textRight = col ? col.getBoundingClientRect().right : w * 0.47;
+      const marginRight = 30;
+
+      // Pixels per world unit that let the whole assembly sit in the space
+      // remaining to the right of the copy, with the gap intact.
+      const avail = Math.max(160, w - textRight - gapPx - marginRight);
+      let k = avail / (2 * outer);
+      k = Math.min(k, (h / 2 - 34) / outer);
+      k = THREE.MathUtils.clamp(k, 40, 170);
+
+      const centreX = textRight + gapPx + outer * k;
+      cam.shift = (centreX - w / 2) / k;
+      cam.restRadius = THREE.MathUtils.clamp(h / 2 / (k * halfFov), 9, 30);
+    }
 
     camera.aspect = aspect;
     camera.updateProjectionMatrix();
+
+    // Published so the framing can be inspected and asserted on without
+    // resorting to pixel readback.
+    const pxPerWorld = h / 2 / (cam.restRadius * halfFov);
+    canvas.dataset.framing = JSON.stringify({
+      shift: Number(cam.shift.toFixed(3)),
+      radius: Number(cam.restRadius.toFixed(3)),
+      ringScale,
+      outer: Number(outer.toFixed(3)),
+      pxPerWorld: Number(pxPerWorld.toFixed(2)),
+      assemblyLeftPx: Math.round(w / 2 + (cam.shift - outer) * pxPerWorld),
+      assemblyRightPx: Math.round(w / 2 + (cam.shift + outer) * pxPerWorld),
+    });
 
     const dpr = Math.min(window.devicePixelRatio, 2);
     renderer.setPixelRatio(dpr);
@@ -390,14 +510,12 @@ export function createScene({ canvas }) {
   function applyFinale() {
     const t = state.finale;
     rings.forEach((r) => {
-      r.mat.color.copy(COLOR_RING).lerp(COLOR_CORAL, t);
-      r.labelMat.color.copy(COLOR_RING).lerp(COLOR_CORAL, t);
-      if (r.revealed) {
-        r.mat.opacity = RING_BASE_OPACITY + (0.7 - RING_BASE_OPACITY) * t;
-        r.labelMat.opacity = 0.3 + 0.25 * t;
-      }
+      // The metal warms toward coral and starts to carry its own light.
+      r.mat.color.copy(COLOR_METAL).lerp(COLOR_CORAL, t * 0.55);
+      r.mat.emissive.copy(COLOR_OFF_WHITE).lerp(COLOR_CORAL, t);
+      r.mat.emissiveIntensity = 0.05 + t * 0.5;
+      if (r.revealed) r.plaqueMat.opacity = 0.85 + t * 0.15;
     });
-    sphereMat.emissiveIntensity = EMISSIVE_BASE * (1 + t);
     shellMat.opacity = 0.05 + 0.05 * t;
     emberMat.uniforms.uBright.value = 1 + t * 0.9;
   }
@@ -410,22 +528,43 @@ export function createScene({ canvas }) {
     sphere.rotation.y += 0.0015;
     shell.rotation.y += 0.0015;
 
-    // Resting heartbeat on a four second cycle.
+    // Resting heartbeat on a four second cycle, wide enough to actually read.
     const pulse = 0.5 + 0.5 * Math.sin((clock / 4) * Math.PI * 2);
-    sphereMat.emissiveIntensity = EMISSIVE_BASE * (1 + state.finale) * (0.78 + pulse * 0.44);
+    sphereMat.emissiveIntensity =
+      (EMISSIVE_LOW + (EMISSIVE_HIGH - EMISSIVE_LOW) * pulse) * (1 + state.finale * 0.6);
+    shell.scale.setScalar(SHELL_LOW + (SHELL_HIGH - SHELL_LOW) * pulse);
 
     rings.forEach((r) => {
       if (!r.revealed) return;
-      r.mesh.rotateZ(r.def.speed * r.def.dir * (dt * 60));
+
+      const step = r.def.speed * r.def.dir * (dt * 60);
+      r.spin += step;
+      r.mesh.rotateZ(step);
+
+      // The plaque orbits with its ring but always faces the camera, so the
+      // name never turns sideways or upside down.
+      orbitPoint(r, r.spin + r.def.offset, tmpVec);
+      r.plaque.position.copy(tmpVec);
+      r.plaque.quaternion.copy(camera.quaternion);
+
+      // A quick sweep round the circumference, out of phase with its neighbours.
+      const sweepAngle = (clock / r.def.sweep) * Math.PI * 2 + r.def.offset;
+      orbitPoint(r, sweepAngle, tmpVec);
+      r.glint.position.copy(tmpVec);
+      r.sweepLight.position.copy(tmpVec);
+
+      // Flare hardest on the arc nearest the camera, so it reads as a glint
+      // catching the metal rather than a lamp orbiting the ring.
+      const facing = 0.5 + 0.5 * Math.cos(sweepAngle);
+      r.glintMat.opacity = 0.3 + facing * 0.6;
+      r.sweepLight.intensity = SWEEP_LIGHT_BASE * (0.3 + facing);
     });
 
     disturb();
     updateEmbers(dt);
 
     // The coral light leans in when the pointer nears the centre of the frame.
-    const centreness = pointer.active
-      ? 1 - Math.min(1, Math.hypot(pointer.x, pointer.y))
-      : 0;
+    const centreness = pointer.active ? 1 - Math.min(1, Math.hypot(pointer.x, pointer.y)) : 0;
     coralLight.intensity = state.coralBase * (1 + centreness * 0.35);
 
     pointer.x += (pointer.tx - pointer.x) * 0.04;
@@ -447,7 +586,7 @@ export function createScene({ canvas }) {
   /** Scroll progress across the whole page, 0 to 1. Drives orbit and clarity. */
   function setScrollProgress(p) {
     state.scroll = p;
-    cam.azimuth = -0.30 + p * 0.61;
+    cam.azimuth = -0.3 + p * 0.61;
     cam.height = 0.4 - p * 0.7;
     const density = FOG_MAX + (FOG_MIN - FOG_MAX) * p;
     scene.fog.density = density;
@@ -455,31 +594,31 @@ export function createScene({ canvas }) {
     emberMat.uniforms.uProgress.value = p;
   }
 
-  function setCameraRadius(r) {
-    cam.radius = r;
-  }
-
   function revealRing(index, immediate = false) {
     const r = rings[index];
     if (!r || r.revealed) return;
     r.revealed = true;
     r.mesh.visible = true;
+    r.plaque.visible = true;
+    r.glint.visible = true;
 
     if (immediate) {
       r.mesh.scale.setScalar(1);
-      r.mat.opacity = RING_BASE_OPACITY;
-      r.labelMat.opacity = 0.3;
+      r.mat.opacity = 1;
+      r.plaqueMat.opacity = 0.85;
       applyFinale();
       return;
     }
+
+    playRingLock();
 
     gsap.fromTo(
       r.mesh.scale,
       { x: 1.6, y: 1.6, z: 1.6 },
       { x: 1, y: 1, z: 1, duration: 0.7, ease: 'power3.out' }
     );
-    gsap.fromTo(r.mat, { opacity: 0 }, { opacity: RING_BASE_OPACITY, duration: 0.7, ease: 'power3.out' });
-    gsap.fromTo(r.labelMat, { opacity: 0 }, { opacity: 0.3, duration: 0.9, ease: 'power2.out' });
+    gsap.fromTo(r.mat, { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power3.out' });
+    gsap.fromTo(r.plaqueMat, { opacity: 0 }, { opacity: 0.85, duration: 0.9, ease: 'power2.out' });
   }
 
   function flash() {
@@ -512,11 +651,7 @@ export function createScene({ canvas }) {
     const tl = gsap.timeline();
     cam.radius = cam.restRadius * 2.2;
 
-    tl.to(cam, {
-      radius: cam.restRadius,
-      duration: 1.1,
-      ease: 'power3.inOut',
-    }, 0.5);
+    tl.to(cam, { radius: cam.restRadius, duration: 1.1, ease: 'power3.inOut' }, 0.5);
 
     tl.add(() => {
       flash();
@@ -527,22 +662,15 @@ export function createScene({ canvas }) {
     return tl;
   }
 
+  /** No new ring here. The five that exist resolve together into coral. */
   function runFinale() {
-    // Ring six locks in first, then the whole structure resolves to coral.
-    revealRing(5);
     gsap.to(state, {
       finale: 1,
       duration: 1.2,
-      delay: 0.55,
       ease: 'power2.inOut',
       onUpdate: applyFinale,
     });
-    gsap.to(emberMat.uniforms.uOpacity, {
-      value: 0.75,
-      duration: 1.2,
-      delay: 0.55,
-      ease: 'power2.inOut',
-    });
+    gsap.to(emberMat.uniforms.uOpacity, { value: 0.75, duration: 1.2, ease: 'power2.inOut' });
   }
 
   /** Reduced motion: show the completed structure, no theatre. */
@@ -554,16 +682,30 @@ export function createScene({ canvas }) {
     applyFinale();
     emberMat.uniforms.uOpacity.value = 0.75;
     updateCamera();
+
+    rings.forEach((r) => {
+      orbitPoint(r, r.def.offset, tmpVec);
+      r.plaque.position.copy(tmpVec);
+      r.plaque.quaternion.copy(camera.quaternion);
+      orbitPoint(r, r.def.offset + 0.8, tmpVec);
+      r.glint.position.copy(tmpVec);
+      r.sweepLight.position.copy(tmpVec);
+      r.sweepLight.intensity = SWEEP_LIGHT_BASE * 0.6;
+      r.glintMat.opacity = 0.6;
+    });
+
     renderer.render(scene, camera);
   }
 
   function dispose() {
     rings.forEach((r) => {
       r.geo.dispose();
-      r.labelGeo.dispose();
       r.mat.dispose();
-      r.labelMat.dispose();
+      r.plaqueGeo.dispose();
+      r.plaqueMat.dispose();
       r.tex.dispose();
+      r.glintGeo.dispose();
+      r.glintMat.dispose();
     });
     sphereGeo.dispose();
     shellGeo.dispose();
@@ -581,7 +723,6 @@ export function createScene({ canvas }) {
     resize: layout,
     setPointer,
     setScrollProgress,
-    setCameraRadius,
     revealRing,
     heroEntrance,
     runFinale,

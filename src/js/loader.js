@@ -1,82 +1,48 @@
 import gsap from 'gsap';
 
 /**
- * Loading screen. Gates the reveal of the site until the scene is initialised.
- * Progress is real: main.js feeds it milestones. A slow auto-ramp keeps the
- * counter alive between milestones so it never stalls at a round number.
+ * Loading screen. Still gates the reveal on real asset and scene readiness,
+ * there is simply no numeric readout of it any more. The name resolves out of
+ * blur, a coral rule and the tagline follow, and LOADING breathes underneath
+ * until the scene is ready.
  */
 export function createLoader({ reducedMotion = false, isMobile = false } = {}) {
   const el = document.querySelector('[data-loader]');
   if (!el) {
-    return {
-      set() {},
-      finish: () => Promise.resolve(),
-    };
+    return { set() {}, finish: () => Promise.resolve() };
   }
 
   const nameEl = el.querySelector('[data-loader-name]');
-  const seed = el.querySelector('[data-loader-seed]');
-  const ringPath = el.querySelector('[data-loader-ring]');
+  const rule = el.querySelector('[data-loader-rule]');
+  const tagline = el.querySelector('[data-loader-tagline]');
   const status = el.querySelector('[data-loader-status]');
-  const pctEl = el.querySelector('[data-loader-pct]');
 
-  const MIN_DURATION = isMobile ? 1.8 : 2.6;
+  // The animation is simpler than it was, so it needs longer to still read as
+  // deliberate rather than as a flash of text.
+  const MIN_DURATION = isMobile ? 2.8 : 3.6;
   const started = performance.now();
 
-  // Split the name into per-character spans for the blur-resolve.
+  // Split the name into per character spans for the blur resolve.
   const label = nameEl.textContent.trim();
   nameEl.textContent = '';
   const chars = [...label].map((ch) => {
     const span = document.createElement('span');
     span.className = 'loader__char';
-    span.textContent = ch === ' ' ? ' ' : ch;
+    span.textContent = ch === ' ' ? ' ' : ch;
     nameEl.appendChild(span);
     return span;
   });
   nameEl.setAttribute('aria-label', label);
 
-  const circumference = ringPath ? 2 * Math.PI * Number(ringPath.getAttribute('r')) : 0;
-  if (ringPath) {
-    ringPath.style.strokeDasharray = `${circumference}`;
-    ringPath.style.strokeDashoffset = `${circumference}`;
-  }
-
-  // --- reduced motion: no theatre, just get out of the way -----------------
   if (reducedMotion) {
     el.remove();
     return { set() {}, finish: () => Promise.resolve() };
   }
 
-  const state = { pct: 0 };
-  let target = 0;
-  let ramp = null;
-
-  const paint = () => {
-    const v = Math.round(state.pct);
-    if (pctEl) pctEl.textContent = `${String(v).padStart(3, '0')}%`;
-    if (ringPath) {
-      ringPath.style.strokeDashoffset = `${circumference * (1 - state.pct / 100)}`;
-    }
-  };
-
-  paint();
-
   // --- entrance ------------------------------------------------------------
-  const tl = gsap.timeline();
+  gsap.set(chars, { scale: 1.06 });
 
-  tl.to(seed, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0);
-  tl.to(
-    seed,
-    {
-      scale: 1.25,
-      opacity: 0.6,
-      duration: 0.8,
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true,
-    },
-    0.2
-  );
+  const tl = gsap.timeline();
 
   tl.to(
     chars,
@@ -91,37 +57,28 @@ export function createLoader({ reducedMotion = false, isMobile = false } = {}) {
     0.3
   );
 
-  tl.to(status, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.6);
+  tl.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: 'power2.out' }, 0.9);
+  tl.to(tagline, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.05);
+  tl.to(status, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 1.3);
 
-  gsap.set(chars, { scale: 1.06 });
-
-  /** Feed real progress in, 0 to 1. */
-  function set(value) {
-    target = Math.max(target, Math.min(1, value) * 100);
-    if (ramp) ramp.kill();
-    ramp = gsap.to(state, {
-      pct: target,
-      duration: 0.6,
-      ease: 'power2.out',
-      onUpdate: paint,
-    });
-  }
-
-  // Creep forward slowly so the counter is never frozen between milestones.
-  const creep = gsap.to(state, {
-    duration: MIN_DURATION,
-    ease: 'none',
-    onUpdate() {
-      const drift = Math.min(88, (creep.progress() * 100) ** 0.92);
-      if (drift > state.pct) {
-        state.pct = drift;
-        paint();
-      }
-    },
+  // Without a counter, this is what tells the visitor something is happening.
+  const breathe = gsap.to(status, {
+    opacity: 0.6,
+    duration: 0.7,
+    ease: 'sine.inOut',
+    repeat: -1,
+    yoyo: true,
+    delay: 1.7,
   });
 
   /**
-   * Runs the exit. Resolves when the disperse starts, so the hero entrance can
+   * Real progress still gates dismissal, it just is not drawn any more. Kept
+   * as a no-op shaped API so the call sites in main.js read the same as before.
+   */
+  function set() {}
+
+  /**
+   * Runs the exit. Resolves as the disperse starts, so the hero entrance can
    * overlap with the loader clearing.
    */
   function finish() {
@@ -130,51 +87,38 @@ export function createLoader({ reducedMotion = false, isMobile = false } = {}) {
       const wait = Math.max(0, MIN_DURATION - elapsed);
 
       gsap.delayedCall(wait, () => {
-        creep.kill();
-        if (ramp) ramp.kill();
+        breathe.kill();
 
-        // Never snap to 100, always ease into it.
-        gsap.to(state, {
-          pct: 100,
-          duration: 0.4,
-          ease: 'power2.out',
-          onUpdate: paint,
-          onComplete: () => {
-            const out = gsap.timeline({
-              delay: 0.45,
-              onComplete: () => el.remove(),
-            });
+        const out = gsap.timeline({ onComplete: () => el.remove() });
 
-            // Disperse like clearing smoke, staggered outward from the centre.
-            out.to(
-              chars,
-              {
-                opacity: 0,
-                filter: 'blur(14px)',
-                scale: 1.08,
-                duration: 0.7,
-                ease: 'power2.inOut',
-                stagger: { each: 0.03, from: 'center' },
-              },
-              0
-            );
-            out.to(
-              [seed, el.querySelector('.loader__ring'), status],
-              {
-                opacity: 0,
-                filter: 'blur(14px)',
-                scale: 1.08,
-                duration: 0.7,
-                ease: 'power2.inOut',
-              },
-              0
-            );
-            out.to(el, { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0.45);
-
-            // Hand off early so the hero begins while the loader is still clearing.
-            gsap.delayedCall(0.1, resolve);
+        // Disperse like clearing smoke, staggered outward from the centre.
+        out.to(
+          chars,
+          {
+            opacity: 0,
+            filter: 'blur(14px)',
+            scale: 1.08,
+            duration: 0.7,
+            ease: 'power2.inOut',
+            stagger: { each: 0.03, from: 'center' },
           },
-        });
+          0
+        );
+        out.to(
+          [rule, tagline, status],
+          {
+            opacity: 0,
+            filter: 'blur(14px)',
+            scale: 1.08,
+            duration: 0.7,
+            ease: 'power2.inOut',
+          },
+          0
+        );
+        out.to(el, { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0.45);
+
+        // Hand off early so the hero begins while the loader is still clearing.
+        gsap.delayedCall(0.1, resolve);
       });
     });
   }

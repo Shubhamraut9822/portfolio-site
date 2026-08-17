@@ -2,56 +2,31 @@ import gsap from 'gsap';
 
 /**
  * Foreground line-art layer. Hand coded SVG only, never raster.
- * These are meant to be felt rather than noticed: a section reads as
- * "scrutiny" or "direction" without the visitor ever naming the shape.
  *
- * Three nested transforms, one job each:
+ * Two elements, deliberately:
+ *   the seal    a geometric rosette, on closing and contact blocks only
+ *   the threads long curved strokes carrying a slow travelling highlight,
+ *               running through every page as ambient connective texture
+ *
+ * Nested transforms, one job each:
  *   .glyph        scroll parallax   (owned by scroll.js)
  *   .glyph__inner cursor tilt       (owned here)
  *   svg           idle drift        (owned here)
  */
 
-const SHAPES = {
-  document: `
-    <svg viewBox="0 0 120 150" aria-hidden="true" focusable="false">
-      <path d="M14 6h68l24 24v114H14z"/>
-      <path d="M82 6v24h24"/>
-      <path d="M32 62h56M32 82h56M32 102h34"/>
-    </svg>`,
-
-  check: `
-    <svg viewBox="0 0 140 140" aria-hidden="true" focusable="false">
-      <circle cx="70" cy="70" r="62"/>
-      <path d="M44 74l18 19 38-48"/>
-    </svg>`,
-
-  lens: `
-    <svg viewBox="0 0 150 150" aria-hidden="true" focusable="false">
-      <circle cx="62" cy="62" r="50"/>
-      <path d="M98 98l42 42"/>
-    </svg>`,
-
-  compass: `
-    <svg viewBox="0 0 140 140" aria-hidden="true" focusable="false">
-      <circle cx="70" cy="70" r="62"/>
-      <path d="M70 70L98 40"/>
-      <circle cx="70" cy="70" r="3.5"/>
-    </svg>`,
-
-  // A six petal rosette: one bounding circle and six arcs whose centres sit on
-  // a smaller circle. No fill, no ribbon, not a badge.
-  seal: `
-    <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
-      <circle cx="80" cy="80" r="68"/>
-      <circle cx="80" cy="80" r="33"/>
-      <circle cx="113" cy="80" r="33"/>
-      <circle cx="96.5" cy="108.6" r="33"/>
-      <circle cx="63.5" cy="108.6" r="33"/>
-      <circle cx="47" cy="80" r="33"/>
-      <circle cx="63.5" cy="51.4" r="33"/>
-      <circle cx="96.5" cy="51.4" r="33"/>
-    </svg>`,
-};
+// A six petal rosette: one bounding circle and six arcs whose centres sit on
+// a smaller circle. No fill, no ribbon, not a badge.
+const SEAL = `
+  <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+    <circle cx="80" cy="80" r="68"/>
+    <circle cx="80" cy="80" r="33"/>
+    <circle cx="113" cy="80" r="33"/>
+    <circle cx="96.5" cy="108.6" r="33"/>
+    <circle cx="63.5" cy="108.6" r="33"/>
+    <circle cx="47" cy="80" r="33"/>
+    <circle cx="63.5" cy="51.4" r="33"/>
+    <circle cx="96.5" cy="51.4" r="33"/>
+  </svg>`;
 
 const THREAD = `
   <svg viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true" focusable="false">
@@ -61,14 +36,12 @@ const THREAD = `
   </svg>`;
 
 export function initGlyphs({ reducedMotion, isMobile }) {
-  const nodes = [...document.querySelectorAll('[data-glyph]')];
+  const seals = [...document.querySelectorAll('[data-glyph="seal"]')];
   const threads = [...document.querySelectorAll('[data-thread]')];
 
-  nodes.forEach((node) => {
-    const kind = node.dataset.glyph;
-    if (!SHAPES[kind]) return;
+  seals.forEach((node) => {
     node.setAttribute('aria-hidden', 'true');
-    node.innerHTML = `<span class="glyph__inner">${SHAPES[kind]}</span>`;
+    node.innerHTML = `<span class="glyph__inner">${SEAL}</span>`;
   });
 
   threads.forEach((node) => {
@@ -89,8 +62,7 @@ export function initGlyphs({ reducedMotion, isMobile }) {
     );
   });
 
-  // Idle drift, deliberately out of sync with every neighbour.
-  const glyphs = nodes
+  const glyphs = seals
     .map((node) => {
       const inner = node.querySelector('.glyph__inner');
       const svg = node.querySelector('svg');
@@ -98,17 +70,20 @@ export function initGlyphs({ reducedMotion, isMobile }) {
     })
     .filter(Boolean);
 
+  // Idle drift, deliberately out of sync with every neighbour.
   glyphs.forEach((g, i) => {
-    gsap.to(g.svg, {
-      x: gsap.utils.random(-8, 8),
-      y: gsap.utils.random(-10, 10),
-      rotation: gsap.utils.random(-1.5, 1.5),
-      duration: gsap.utils.random(9, 14),
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true,
-      delay: i * 0.7,
-    });
+    if (!isMobile) {
+      gsap.to(g.svg, {
+        x: gsap.utils.random(-8, 8),
+        y: gsap.utils.random(-10, 10),
+        rotation: gsap.utils.random(-1.5, 1.5),
+        duration: gsap.utils.random(9, 14),
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: i * 0.7,
+      });
+    }
     g.base = parseFloat(getComputedStyle(g.node).opacity) || 0.1;
     g.rx = 0;
     g.ry = 0;
@@ -117,6 +92,7 @@ export function initGlyphs({ reducedMotion, isMobile }) {
   });
 
   if (isMobile || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (!glyphs.length) return;
 
   // "It noticed you": brighten and lean toward a nearby pointer.
   const pointer = { x: -9999, y: -9999 };

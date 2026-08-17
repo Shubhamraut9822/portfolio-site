@@ -195,18 +195,34 @@ html.has-custom-cursor * { cursor: none; }
   color: var(--coral);
 }
 
+/* The pairing is ENGLISH WORD then Devanagari in one span. Font fallback is
+   per glyph, so the Latin half picks up JetBrains Mono and the script half
+   falls through to Noto. */
 .eyebrow__sa {
-  font-family: var(--font-deva);
+  font-family: var(--font-mono), 'Noto Sans Devanagari', sans-serif;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
   opacity: 0.7;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.14em;
 }
 
-.eyebrow__sa .lat {
-  font-family: var(--font-mono);
+.eyebrow--center { justify-content: center; }
+
+.footer__sa {
+  margin-top: 14px;
+  font-family: var(--font-mono), 'Noto Sans Devanagari', sans-serif;
+  font-size: 11px;
   letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* Page level thread, for inner pages that have no sectioned 3D backdrop. */
+.thread--page {
+  position: absolute;
+  top: 340px;
+  height: 620px;
 }
 
 /* ==========================================================================
@@ -317,11 +333,7 @@ html.has-custom-cursor * { cursor: none; }
   vector-effect: non-scaling-stroke;
 }
 
-.glyph--doc     { width: 240px; }
-.glyph--check   { width: 220px; }
-.glyph--lens    { width: 260px; }
-.glyph--compass { width: 250px; }
-.glyph--seal    { width: 300px; }
+.glyph--seal { width: 300px; }
 
 .thread {
   position: absolute;
@@ -479,7 +491,7 @@ html.has-custom-cursor * { cursor: none; }
 
 .brand {
   font-weight: 700;
-  font-size: 17px;
+  font-size: 22px;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
@@ -487,7 +499,7 @@ html.has-custom-cursor * { cursor: none; }
 .nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 42px;
 }
 
 .nav-link {
@@ -512,6 +524,12 @@ html.has-custom-cursor * { cursor: none; }
   border-radius: 50%;
   background: var(--coral);
   transform: translateX(-50%);
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .header__cta {
@@ -619,48 +637,15 @@ html.has-custom-cursor * { cursor: none; }
   justify-content: center;
 }
 
-.loader__stage {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loader__seed {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--coral);
-  box-shadow: 0 0 18px 4px var(--coral-glow);
-  opacity: 0;
-}
-
-.loader__ring {
-  position: absolute;
-  inset: 0;
-  width: 220px;
-  height: 220px;
-  transform: rotate(-90deg);
-  overflow: visible;
-}
-
-.loader__ring circle {
-  fill: none;
-  stroke: var(--text-primary);
-  stroke-opacity: 0.3;
-  stroke-width: 1;
-}
-
 .loader__name {
-  margin-top: 26px;
   display: flex;
   font-weight: 800;
   font-size: clamp(32px, 5vw, 56px);
   letter-spacing: 0.14em;
   color: var(--text-primary);
   line-height: 1;
+  /* Balances the trailing letter-spacing so the lockup is optically centred. */
+  padding-left: 0.14em;
 }
 
 .loader__char {
@@ -670,20 +655,39 @@ html.has-custom-cursor * { cursor: none; }
   white-space: pre;
 }
 
+.loader__rule {
+  width: 50px;
+  height: 2px;
+  margin-top: 28px;
+  background: var(--coral);
+  transform: scaleX(0);
+  transform-origin: center;
+}
+
+.loader__tagline {
+  margin-top: 22px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0;
+}
+
 .loader__status {
-  margin-top: 26px;
-  width: min(360px, 74vw);
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  margin-top: 30px;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.2em;
   color: var(--text-secondary);
+  text-align: center;
   opacity: 0;
 }
 
-.loader__status .deva { font-family: var(--font-deva); letter-spacing: 0.06em; }
+.loader__status .deva {
+  font-family: var(--font-deva);
+  letter-spacing: 0.06em;
+}
 
 /* ==========================================================================
    11. CURSOR LAYER
@@ -820,16 +824,16 @@ html.has-custom-cursor * { cursor: none; }
 .scroll-cue__track {
   position: relative;
   width: 1px;
-  height: 40px;
+  height: 60px;
   background: var(--border-strong);
 }
 
 .scroll-cue__dot {
   position: absolute;
-  left: -2px;
+  left: -3px;
   top: 0;
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--coral);
   animation: cueTravel 2s ease-in-out infinite;
@@ -839,12 +843,12 @@ html.has-custom-cursor * { cursor: none; }
   0%   { transform: translateY(0); opacity: 0; }
   20%  { opacity: 1; }
   80%  { opacity: 1; }
-  100% { transform: translateY(35px); opacity: 0; }
+  100% { transform: translateY(53px); opacity: 0; }
 }
 
 .scroll-cue__label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   color: var(--text-secondary);
 }
@@ -1564,6 +1568,105 @@ html.has-custom-cursor * { cursor: none; }
 
 .prose { display: grid; gap: 24px; margin-top: 34px; }
 .prose p { font-size: 18px; line-height: 1.7; color: var(--text-secondary); max-width: 640px; }
+
+/* ==========================================================================
+   19b. SOUND TOGGLE, MOBILE FOG, MOTION PROMPT, TOAST
+   ========================================================================== */
+
+.sound-toggle {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.sound-toggle:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.sound-toggle.is-on { color: var(--coral); border-color: var(--coral-dim); }
+
+.sound-toggle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Mobile ambient layer. Sits behind everything, never interactive. */
+.mobile-fog {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  opacity: 0.62;
+}
+
+.motion-pill {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-strong);
+  background: rgba(10, 10, 11, 0.9);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transform: translate(-50%, 14px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.motion-pill.is-in { opacity: 1; transform: translate(-50%, 0); }
+
+.motion-pill button {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.motion-pill [data-motion-dismiss] {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: var(--z-grain);
+  padding: 11px 20px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-strong);
+  background: rgba(10, 10, 11, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.is-in { opacity: 1; transform: translate(-50%, 0); }
 
 /* ==========================================================================
    20. ENTRANCE UTILITY

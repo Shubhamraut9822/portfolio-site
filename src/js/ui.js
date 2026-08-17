@@ -24,6 +24,75 @@ export function initUI({ reducedMotion = false } = {}) {
   initFilters({ reducedMotion });
   initCounters({ reducedMotion });
   initPageTransitions({ reducedMotion });
+  initBackForwardRestore();
+  initMailtoFallback();
+}
+
+/* ------------------------------------------------- back / forward restore */
+
+/**
+ * The leave transition fades the body to zero. When the browser restores a
+ * page from bfcache it restores that faded state too, and `load` never fires
+ * again, so nothing would bring it back. `pageshow` is the one event that
+ * does fire on a cached restore.
+ */
+function initBackForwardRestore() {
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+
+    document.body.classList.remove('is-leaving');
+    document.body.classList.add('is-ready');
+    document.body.style.transition = 'none';
+    document.body.style.opacity = '1';
+
+    // Hand styling back to the stylesheet once the frame has painted, so the
+    // next outgoing transition still animates.
+    requestAnimationFrame(() => {
+      document.body.style.transition = '';
+      document.body.style.opacity = '';
+    });
+  });
+}
+
+/* -------------------------------------------------------- mailto fallback */
+
+/**
+ * A mailto link does nothing visible on a machine with no mail client
+ * registered, which reads as a dead button. Copy the address as well, so the
+ * click always produces a result.
+ */
+function initMailtoFallback() {
+  document.addEventListener('click', (e) => {
+    const link = e.target instanceof Element ? e.target.closest('a[href^="mailto:"]') : null;
+    if (!link) return;
+
+    const address = link.getAttribute('href').replace(/^mailto:/, '').split('?')[0];
+    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+
+    navigator.clipboard.writeText(address).then(
+      () => toast(`Email address copied: ${address}`),
+      () => {}
+    );
+  });
+}
+
+let toastTimer = 0;
+
+function toast(message) {
+  let el = document.querySelector('.toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+  }
+
+  el.textContent = message;
+  requestAnimationFrame(() => el.classList.add('is-in'));
+
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => el.classList.remove('is-in'), 2800);
 }
 
 /* -------------------------------------------------------------- nav state */

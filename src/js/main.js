@@ -6,6 +6,8 @@ import { initUI } from './ui.js';
 import { initCursor } from './cursor.js';
 import { initGlyphs } from './glyphs.js';
 import { initScroll } from './scroll.js';
+import { initSound } from './sound.js';
+import { initMobileFog } from './mobile-fog.js';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -68,6 +70,12 @@ async function boot() {
 
   initGlyphs({ reducedMotion, isMobile: mobile });
 
+  // Muted until the visitor says otherwise. This only builds the toggle.
+  initSound();
+
+  // Mobile gets its own lightweight ambient layer in place of the 3D scene.
+  initMobileFog({ reducedMotion });
+
   const { heroTimeline } = initScroll({ scene, reducedMotion, isMobile: mobile });
 
   // ------------------------------------------------------ single render loop
@@ -105,7 +113,10 @@ async function boot() {
       }, 160);
     });
 
-    window.addEventListener('beforeunload', () => scene.dispose(), { once: true });
+    // Deliberately no beforeunload teardown. Registering one disqualifies the
+    // page from the back/forward cache, and disposing the WebGL context on the
+    // way out leaves a dead canvas behind on a cached restore. The browser
+    // reclaims these resources on its own; dispose() stays for explicit calls.
   }
 
   loader.set(1);

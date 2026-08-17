@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { playClickTick } from './sound.js';
 
 const HOVER_SELECTOR = 'a, button, .acc__head, .filter, .fw-tile, input, [data-hover]';
 const MAGNET_SELECTOR = '.btn, [data-magnetic]';
@@ -142,6 +143,9 @@ export function initCursor({ reducedMotion, onMove } = {}) {
   }
 
   function onClick(e) {
+    // Same beat as the ripple. Silent unless the visitor turned sound on.
+    playClickTick();
+
     const el = document.createElement('div');
     el.className = 'ripple';
     el.style.left = `${e.clientX}px`;
